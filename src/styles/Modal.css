@@ -1,93 +1,92 @@
 .backdrop {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 100%;
-    background: rgba(0, 0, 0, 0.664);
-    z-index: 500;
-    filter: blur(5rem);
-    transition: transform 0.2s ease-in-out;
-    z-index: 100;
-    pointer-events: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 500;
+  transition: transform 0.2s ease-in-out;
+  z-index: 100;
+  pointer-events: none;
 }
 
 .modal__container {
-    top: 50%;
-    left: 50%;
-    width: 70%;
-    max-width: 70rem;
-    padding: 4rem 4rem 3rem;
-    z-index: 9999;
-    max-height: 90vh;
-    background: var(--white);
-    overflow-y: auto;
-    position: absolute;
-    border-radius: 5px;
-    transform: translate(-50%, -50%);
-    transition: transform .2s ease-in-out;
+  top: 50%;
+  left: 50%;
+  width: 70%;
+  max-width: 70rem;
+  padding: 4rem 4rem 3rem;
+  z-index: 9999;
+  max-height: 90vh;
+  background: var(--white);
+  overflow-y: auto;
+  position: absolute;
+  border-radius: 5px;
+  transform: translate(-50%, -50%);
+  transition: transform 0.2s ease-in-out;
 }
 
 .modal__close-btn {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    height: 35px;
-    width: 35px;
-    font-size: 3rem;
-    border-radius: 50%;
-    border: none;
-    cursor: pointer;
-    filter: drop-shadow(0 0px 6px rgba(0,0,0,.3));
-    background: linear-gradient(180deg, var(--light-yellow), var(--dark-yellow));
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  height: 35px;
+  width: 35px;
+  font-size: 3rem;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  filter: drop-shadow(0 0px 6px rgba(0, 0, 0, 0.3));
+  background: linear-gradient(180deg, var(--light-yellow), var(--dark-yellow));
 }
 
 .hide__backdrop {
-    transform: translateY(-1000px);
+  transform: translateY(-1000px);
 }
 
 .show__backdrop {
-    transform: translateY(0);
+  transform: translateY(0);
 }
 
 .hide__modal {
-    transform: translate(-50%, -1000px);
+  transform: translate(-50%, -1000px);
 }
 
 .show__modal {
-    transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
 }
-  
+
 .confirm__btn,
 .cancel__btn,
 .info__button {
-    padding: 1rem 1.4rem;
-    border-radius: 5px;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.4);
-    color: var(--white);
-    border: none;
-    font-weight: 900;
-    margin: 0 3rem;
-    margin-top: 2rem;
-    min-width: 12rem;
-    font-size: 1.4rem;
+  padding: 1rem 1.4rem;
+  border-radius: 5px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.4);
+  color: var(--white);
+  border: none;
+  font-weight: 900;
+  margin: 0 3rem;
+  margin-top: 2rem;
+  min-width: 12rem;
+  font-size: 1.4rem;
 }
-  
+
 .confirm__btn {
-    background: var(--correct-answer);
+  background: var(--correct-answer);
 }
-  
+
 .cancel__btn {
-    background: var(--wrong-answer);
+  background: var(--wrong-answer);
 }
 
 .info__button {
-    background: var(--bg-primary);
+  background: var(--bg-primary);
 }
 
 @media screen and (max-width: 721px) {
-    .modal__container {
-        padding: 4rem 2rem 3rem;
-        width: 90%;
-    }
+  .modal__container {
+    padding: 4rem 2rem 3rem;
+    width: 90%;
+  }
 }

@@ -1,14 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { Route, Switch, useHistory } from "react-router-dom";
-import Home from "./Components/Home";
-import Modal from "./Components/Modal";
-import Loader from "./Components/Loader";
-import GameSummary from "./Components/GameSummary";
-import GameRules from "./Components/GameRules";
-import QuestionCard from "./Components/QuestionCard";
-import { getQuestionsByDifficulty, shuffleArr } from "./utils/utils";
-import { QuestionState, QuestionType, AnswerType } from "./types";
+import {
+  getFirstUsedLifeline,
+  getQuestionsByDifficulty,
+  INITIAL_STATE,
+  LIFELINES_ENUM,
+  shuffleArr,
+} from "./utils/utils";
+import { QuestionState, QuestionType, AnswerType, LifelineType } from "./types";
 import { useAxios } from "./hooks/useAxios";
+import {
+  Home,
+  Modal,
+  Loader,
+  GameRules,
+  GameSummary,
+  QuestionCard,
+} from "./Components";
 
 const TOTAL_QUESTIONS: number = +process.env.REACT_APP_TOTAL_QUESTIONS!;
 const APP_NAME: string = process.env.REACT_APP_APP_NAME!;
@@ -16,7 +24,18 @@ const QUESTION_PRIZES: string[] =
   process.env.REACT_APP_QUESTION_PRIZES?.split(";")!;
 
 const App = () => {
+  const history = useHistory();
+  const [lifelines, setLifeLines] = useState<LifelineType>(
+    INITIAL_STATE.LIFELINES
+  );
+  const [doubleDippOptions, setDoubleDippOptions] = useState<[string, string]>([
+    "",
+    "",
+  ]);
   const [contestantName, setContestantName] = useState<string>("Aashish");
+  const [selectedLifelineForRevival, setSelectedLifelineForRevival] =
+    useState<string>("");
+  const [selectedLifeline, setSelectedLifeline] = useState<string>("");
   const [showRules, setShowRules] = useState<boolean>(false);
   const [wantToQuitGame, setWantToQuitGame] = useState<boolean>(false);
   const [showContestentError, setShowContestentError] =
@@ -30,8 +49,6 @@ const App = () => {
     useState<boolean>(false);
   const [timerId, setTimerId] = useState<any>(null);
   const [userAnswers, setUserAnswers] = useState<AnswerType[]>([]);
-
-  const history = useHistory();
 
   const { fetchData, data, loading, error } = useAxios();
 
@@ -52,8 +69,54 @@ const App = () => {
     setTimeout(() => {
       setTimerId(null);
       setGameOver(true);
+      setLifeLines(INITIAL_STATE.LIFELINES);
       history.push("/summary");
     }, 1000);
+  };
+
+  const chooseLifeline = (e: React.MouseEvent<HTMLButtonElement>) => {
+    setSelectedLifeline(e.currentTarget.value);
+  };
+
+  const ReviveLifelineConfirmHandler = () => {
+    setLifeLines({
+      ...lifelines,
+      [LIFELINES_ENUM.REVIVE_LIFELINE]: true,
+      [selectedLifelineForRevival]: false,
+    });
+    setTimeout(() => {
+      setSelectedLifelineForRevival("");
+      setSelectedLifeline("");
+    }, 400);
+  };
+
+  const lifelineConfirmHandler = () => {
+    if (selectedLifeline === LIFELINES_ENUM.REVIVE_LIFELINE) {
+      setTimeout(
+        () => setSelectedLifelineForRevival(getFirstUsedLifeline(lifelines)),
+        500
+      );
+      return;
+    }
+
+    setLifeLines({
+      ...lifelines,
+      [selectedLifeline]: true,
+    });
+
+    switch (selectedLifeline) {
+      case LIFELINES_ENUM.DOUBLE_DIPP:
+        clearInterval(timerId);
+        let [option1, option2] = shuffleArr(
+          questions[questionNumber].incorrect_answers
+        ).slice(0, 2);
+        setDoubleDippOptions([option1, option2]);
+        setTimeout(() => {
+          let id = setInterval(tick, 1000);
+          setTimerId(id);
+        }, 5000);
+    }
+    setSelectedLifeline("");
   };
 
   const startGame = async () => {
@@ -73,6 +136,18 @@ const App = () => {
     history.push("/play");
   };
 
+  const goToHome = () => {
+    history.push("/");
+  };
+
+  const quitGame = () => {
+    setWantToQuitGame(true);
+  };
+
+  const changeRevivalLifeline = (selectedRevivalLifeline: string) => {
+    setSelectedLifelineForRevival(selectedRevivalLifeline);
+  };
+
   const gameQuitConfirmHandler = () => {
     clearInterval(timerId);
     const answer: AnswerType = {
@@ -84,14 +159,6 @@ const App = () => {
     setUserAnswers((answers) => [...answers, answer]);
     setWantToQuitGame(false);
     setTimeout(() => gameOverMethod(), 1000);
-  };
-
-  const quitGame = () => {
-    setWantToQuitGame(true);
-  };
-
-  const goToHome = () => {
-    history.push("/");
   };
 
   const checkAnswer = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -123,8 +190,15 @@ const App = () => {
   };
 
   useEffect(() => {
+    window.onbeforeunload = function () {
+      return "Are you sure you want to leave?";
+    };
+  }, []);
+
+  useEffect(() => {
     if (questionNumber > -1) {
-      setSeconds(questionNumber > 9 ? 90 : questionNumber > 4 ? 60 : 45);
+      setSeconds(questionNumber > 9 ? 90 : questionNumber > 4 ? 60 : -45);
+      setDoubleDippOptions(["", ""]);
       startTimer();
     }
   }, [questionNumber]);
@@ -138,6 +212,7 @@ const App = () => {
         correct_answer: questions[questionNumber].correct_answer,
         question: questions[questionNumber].question,
       };
+      setWantToQuitGame(false);
       setUserAnswers((answers) => [...answers, answer]);
       setTimeout(() => gameOverMethod(), 1000);
     }
@@ -212,6 +287,66 @@ const App = () => {
         {wantToQuitGame && <h1>Are you sure you want to quit?</h1>}
       </Modal>
 
+      <Modal
+        type={
+          ["Audience Poll", "Double Dipp", "Expert Advice"].includes(
+            selectedLifelineForRevival
+          )
+            ? "info"
+            : "confirm"
+        }
+        show={!!selectedLifeline}
+        confirmHandler={lifelineConfirmHandler}
+        cancelHandler={() => setSelectedLifeline("")}
+        closeHandler={
+          selectedLifelineForRevival
+            ? ReviveLifelineConfirmHandler
+            : () => setSelectedLifeline("")
+        }
+      >
+        {selectedLifelineForRevival ? (
+          <div className="lineline__revival__container">
+            <h3 style={{ marginBottom: "1rem" }}>
+              Please Select lifeline to revive
+            </h3>
+            {[
+              {
+                id: "audiencePoll",
+                key: LIFELINES_ENUM.AUDIENCE_POLL,
+              },
+              {
+                id: "doubleDipp",
+                key: LIFELINES_ENUM.DOUBLE_DIPP,
+              },
+              {
+                id: "expertAdvice",
+                key: LIFELINES_ENUM.EXPERT_ADVICE,
+              },
+            ].map(({ key, id }) => (
+              <React.Fragment key={key}>
+                {lifelines[key as keyof LifelineType] && (
+                  <div>
+                    <input
+                      id={id}
+                      type="radio"
+                      name="revivalLifeline"
+                      value={selectedLifelineForRevival}
+                      onChange={() => changeRevivalLifeline(key)}
+                      checked={selectedLifelineForRevival === key}
+                    />
+                    <label htmlFor={id}>{key}</label>
+                  </div>
+                )}
+              </React.Fragment>
+            ))}
+          </div>
+        ) : (
+          <h1>
+            Are you sure you want to use {`'${selectedLifeline}'`} lifeline?
+          </h1>
+        )}
+      </Modal>
+
       <Switch>
         <Route path="/" exact>
           <Home
@@ -223,13 +358,16 @@ const App = () => {
         </Route>
         <Route path="/play">
           <QuestionCard
-            goToHome={goToHome}
             timeLeft={seconds}
+            goToHome={goToHome}
             prizeWon={prizeWon}
             quitGame={quitGame}
+            lifelines={lifelines}
             checkAnswer={checkAnswer}
+            chooseLifeline={chooseLifeline}
             contestantName={contestantName}
             question={questions[questionNumber]}
+            doubleDippOptions={doubleDippOptions}
             options={questions[questionNumber]?.options}
             userAnswer={userAnswers ? userAnswers[questionNumber] : null}
           />
