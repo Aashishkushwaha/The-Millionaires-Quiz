@@ -17,6 +17,8 @@
   --dark-yellow: #c99729;
   --bg-primary: #734c89;
   --bg-secondary: #1f1b2a;
+  --dark-golden-rod: darkgoldenrod;
+  --golden-rod: goldenrod;
 }
 
 html {
@@ -51,6 +53,12 @@ button {
   cursor: pointer;
 }
 
+.inline-flex {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .correct__answer {
   background: var(--correct-answer);
 }
@@ -73,6 +81,7 @@ button {
   padding: 1.4rem 2rem;
   font-size: 1.8rem;
   width: 280px;
+  max-width: 100%;
   font-weight: 700;
   box-shadow: 0 2px 5px var(--black);
   border-radius: 50px;
@@ -119,14 +128,52 @@ button:active {
   transform: translateY(2px);
 }
 
+.lineline__revival__container h3 {
+  font-size: 2rem;
+}
+
+.lineline__revival__container div {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  margin: 1rem 1.6rem;
+}
+
+.lineline__revival__container > div > * {
+  font-size: 1.6rem;
+  cursor: pointer;
+}
+
+.lineline__revival__container > div > input {
+  height: 2rem;
+  width: 2rem;
+}
+
+.lineline__revival__container > div > label {
+  display: inline-block;
+  margin-left: 1rem;
+}
+
 @media screen and (max-width: 721px) {
   html {
     font-size: 62.5%;
   }
 }
 
-@media screen and (max-width: 461px) {
+@media screen and (max-width: 468px) {
   html {
     font-size: 50%;
   }
+
+  body {
+    padding: 5rem 1rem 2rem;
+  }
+
+  /* .lineline__revival__container div {
+    display: inline-block;
+    text-align: left;
+    padding-left: 30%;
+    margin: 0.3rem 0;
+  } */
 }

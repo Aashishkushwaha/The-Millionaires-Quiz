@@ -1,6 +1,7 @@
 import React from "react";
 import "../styles/QuestionCard.css";
-import { AnswerType, QuestionState } from "../types";
+import { AnswerType, LifelineType, QuestionState } from "../types";
+import { getFirstUsedLifeline, LIFELINES_ENUM } from "../utils/utils";
 const DOMPurify = require("dompurify")(window);
 
 type QuestionCardProps = {
@@ -9,22 +10,28 @@ type QuestionCardProps = {
   options: string[];
   quitGame: () => void;
   goToHome: () => void;
-  checkAnswer: (e: React.MouseEvent<HTMLButtonElement>) => void;
-  userAnswer: AnswerType | null;
   contestantName: string;
   question: QuestionState;
+  lifelines: LifelineType;
+  userAnswer: AnswerType | null;
+  doubleDippOptions: [string, string];
+  checkAnswer: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  chooseLifeline: (e: React.MouseEvent<HTMLButtonElement>) => void;
 };
 
 const QuestionCard: React.FC<QuestionCardProps> = ({
-  contestantName,
-  question,
   options,
   timeLeft,
-  checkAnswer,
-  userAnswer,
-  prizeWon,
   quitGame,
   goToHome,
+  question,
+  prizeWon,
+  lifelines,
+  userAnswer,
+  checkAnswer,
+  chooseLifeline,
+  contestantName,
+  doubleDippOptions,
 }) => {
   return (
     <>
@@ -56,17 +63,15 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
           {question && <div className="timer flex">{timeLeft}</div>}
           {options?.map((option: string) => (
             <button
-              disabled={!!userAnswer}
-              // style={{
-              //   background:
-              //     userAnswer?.correct_answer === option
-              //       ? "#4a9428"
-              //       : userAnswer?.answer === option && userAnswer?.correct
-              //       ? "#4a9428"
-              //       : userAnswer?.answer === option && !userAnswer?.correct
-              //       ? "#f84f50"
-              //       : "#fff",
-              // }}
+              disabled={!!userAnswer || doubleDippOptions.includes(option)}
+              style={{
+                cursor: doubleDippOptions.includes(option)
+                  ? "not-allowed"
+                  : "pointer",
+                filter: doubleDippOptions.includes(option)
+                  ? "brightness(50%)"
+                  : "pointer",
+              }}
               className={
                 userAnswer?.correct_answer === option ||
                 (userAnswer?.answer === option && userAnswer?.correct)
@@ -87,6 +92,40 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
             <span className="prize">
               You won - <strong>₹ {prizeWon}</strong>
             </span>
+          </div>
+        )}
+        {question && (
+          <div className="lifeline__container flex">
+            <span className="lifeline__badge">Lifelines</span>
+            {Object.keys(lifelines).map((key: string) => (
+              <button
+                key={key}
+                title={key}
+                value={key}
+                onClick={chooseLifeline}
+                className="lifeline inline-flex"
+                style={{
+                  filter:
+                    LIFELINES_ENUM.REVIVE_LIFELINE ===
+                      getFirstUsedLifeline(lifelines) &&
+                    key === getFirstUsedLifeline(lifelines) &&
+                    !lifelines[LIFELINES_ENUM.REVIVE_LIFELINE]
+                      ? "brightness(30%)"
+                      : "none",
+                }}
+                disabled={
+                  lifelines[key as keyof LifelineType] ||
+                  key === getFirstUsedLifeline(lifelines)
+                }
+              >
+                <span
+                  className={
+                    lifelines[key as keyof LifelineType] ? "lifeline__used" : ""
+                  }
+                />
+                {key}
+              </button>
+            ))}
           </div>
         )}
         {!question && (
