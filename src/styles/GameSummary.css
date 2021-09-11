@@ -1,0 +1,17 @@
+.summary__container {
+  margin-top: 4rem;
+  color: var(--white);
+}
+
+.summary__container h1,
+.summary__container h2 {
+  margin-bottom: 2rem;
+}
+
+.summary__container strong {
+  font-weight: 900;
+  font-size: 2rem;
+  background: linear-gradient(180deg, var(--light-yellow), var(--dark-yellow));
+  color: transparent;
+  background-clip: text;
+}

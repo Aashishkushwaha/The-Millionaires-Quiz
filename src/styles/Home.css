@@ -1,0 +1,41 @@
+.contestant__container {
+  width: 90%;
+  margin: 0 auto;
+  max-width: 420px;
+  position: relative;
+}
+
+.contestant__container label {
+  left: 0;
+  top: 2rem;
+  opacity: 0;
+  z-index: -1;
+  font-size: 1.4rem;
+  position: absolute;
+  color: var(--light-yellow);
+  transform: translateY(2rem);
+  transition: transform 0.15s ease-in-out;
+}
+
+.contestant__input:not(:placeholder-shown) + label {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.contestant__input {
+  width: 100%;
+  padding: 1.4rem;
+  margin-top: 4rem;
+  font-weight: 700;
+  font-size: 1.8rem;
+  position: relative;
+  color: var(--black);
+  background: var(--white);
+  border: 3px solid transparent;
+  box-shadow: 0 2px 5px var(--black);
+}
+
+.contestant__input:focus {
+  outline: none;
+  border: 3px solid var(--dark-yellow);
+}

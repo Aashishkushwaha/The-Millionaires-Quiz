@@ -1,0 +1,132 @@
+@import url("https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap");
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --white: #fff;
+  --black: #000;
+  --wrong-answer: #f84f50;
+  --correct-answer: #4a9428;
+  --light-yellow: #faeb64;
+  --dark-yellow: #c99729;
+  --bg-primary: #734c89;
+  --bg-secondary: #1f1b2a;
+}
+
+html {
+  font-size: 75%;
+}
+
+body {
+  margin: 0;
+  padding: 2rem;
+  min-height: 100vh;
+  text-align: center;
+  font-family: "Lato", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: radial-gradient(var(--bg-primary), var(--bg-secondary));
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  scroll-behavior: smooth;
+  transition: scroll 0.3s ease-in-out;
+}
+
+#root {
+  width: 100%;
+}
+
+img {
+  user-select: none;
+}
+
+button {
+  cursor: pointer;
+}
+
+.correct__answer {
+  background: var(--correct-answer);
+}
+
+.wrong__answer {
+  background: var(--wrong-answer);
+}
+
+.not__answered {
+  background: var(--white);
+}
+
+.start__game,
+.go__to__home,
+.quit__game,
+.game__rules-btn {
+  margin-top: 4rem;
+  border: none;
+  color: var(--black);
+  padding: 1.4rem 2rem;
+  font-size: 1.8rem;
+  width: 280px;
+  font-weight: 700;
+  box-shadow: 0 2px 5px var(--black);
+  border-radius: 50px;
+  background: var(--white);
+}
+
+.game__rules-btn {
+  border-radius: 4px;
+  max-width: 90%;
+}
+
+.quit__game {
+  background: var(--wrong-answer);
+  color: var(--white);
+  position: absolute;
+  padding: 0.6rem 1.4rem;
+  width: auto;
+  top: -3rem;
+  right: 1rem;
+}
+
+.start__game {
+  max-width: 90%;
+  border-radius: 4px;
+  box-shadow: 0 2px 5px black;
+  background: linear-gradient(180deg, var(--light-yellow), var(--dark-yellow));
+}
+
+.brand {
+  background: linear-gradient(180deg, var(--light-yellow), var(--dark-yellow));
+  background-clip: text;
+  color: transparent;
+  font-size: 6rem;
+  font-weight: bolder;
+  font-weight: 900;
+}
+
+button:hover,
+button:focus {
+  transform: translateY(1px);
+}
+
+button:active {
+  transform: translateY(2px);
+}
+
+@media screen and (max-width: 721px) {
+  html {
+    font-size: 62.5%;
+  }
+}
+
+@media screen and (max-width: 461px) {
+  html {
+    font-size: 50%;
+  }
+}
