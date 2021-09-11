@@ -32,7 +32,7 @@ const App = () => {
     "",
     "",
   ]);
-  const [contestantName, setContestantName] = useState<string>("Aashish");
+  const [contestantName, setContestantName] = useState<string>("");
   const [selectedLifelineForRevival, setSelectedLifelineForRevival] =
     useState<string>("");
   const [selectedLifeline, setSelectedLifeline] = useState<string>("");
@@ -40,7 +40,7 @@ const App = () => {
   const [wantToQuitGame, setWantToQuitGame] = useState<boolean>(false);
   const [showContestentError, setShowContestentError] =
     useState<boolean>(false);
-  const [seconds, setSeconds] = useState<number>(-45);
+  const [seconds, setSeconds] = useState<number>(45);
   const [questions, setQuestions] = useState<QuestionState[]>([]);
   const [questionNumber, setQuestionNumber] = useState<number>(-1);
   const [gameOver, setGameOver] = useState<boolean>(true);
@@ -114,7 +114,7 @@ const App = () => {
         setTimeout(() => {
           let id = setInterval(tick, 1000);
           setTimerId(id);
-        }, 5000);
+        }, 1000);
     }
     setSelectedLifeline("");
   };
@@ -197,7 +197,7 @@ const App = () => {
 
   useEffect(() => {
     if (questionNumber > -1) {
-      setSeconds(questionNumber > 9 ? 90 : questionNumber > 4 ? 60 : -45);
+      setSeconds(questionNumber > 9 ? 90 : questionNumber > 4 ? 60 : 45);
       setDoubleDippOptions(["", ""]);
       startTimer();
     }
