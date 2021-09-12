@@ -2,12 +2,13 @@ import { LifelineType } from "../types";
 
 export const getQuestionsByDifficulty = (arr: any[]) => {
   let obj = arr.reduce((acc, item) => {
-    if (!acc[item.difficulty]) acc[item.difficulty] = [item];
-    else acc[item.difficulty].push(item);
+    !acc[item.difficulty]
+      ? (acc[item.difficulty] = [item])
+      : acc[item.difficulty].push(item);
     return acc;
   }, {});
 
-  return [...obj?.easy, ...obj?.medium, ...obj?.hard];
+  return [...(obj?.easy || []), ...(obj?.medium || []), ...(obj?.hard || [])];
 };
 
 export const shuffleArr = (arr: any) => {
