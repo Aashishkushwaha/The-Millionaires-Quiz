@@ -2,13 +2,13 @@
   position: absolute;
   top: 0;
   left: 0;
-  height: 100%;
+  height: 500vh;
+  overflow: hidden;
   width: 100%;
+  cursor: pointer;
   background: rgba(0, 0, 0, 0.7);
   z-index: 500;
   transition: transform 0.2s ease-in-out;
-  z-index: 100;
-  pointer-events: none;
 }
 
 .modal__container {
@@ -16,7 +16,7 @@
   left: 50%;
   width: 70%;
   max-width: 70rem;
-  padding: 4rem 4rem 3rem;
+  padding: 4rem;
   z-index: 9999;
   max-height: 90vh;
   background: var(--white);
@@ -42,7 +42,7 @@
 }
 
 .hide__backdrop {
-  transform: translateY(-1000px);
+  transform: translateY(-500vh);
 }
 
 .show__backdrop {
@@ -86,7 +86,14 @@
 
 @media screen and (max-width: 721px) {
   .modal__container {
-    padding: 4rem 2rem 3rem;
+    padding: 4rem 2rem;
     width: 90%;
+  }
+}
+
+@media screen and (max-width: 468px) {
+  .modal__close-btn {
+    width: 24px;
+    height: 24px;
   }
 }

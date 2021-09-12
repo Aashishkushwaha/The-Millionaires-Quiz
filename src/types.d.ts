@@ -26,3 +26,9 @@ export type LifelineType = {
   "Double Dipp": boolean;
   "Expert Advice": boolean;
 };
+
+export type BarType = {
+  score: number;
+  label: string;
+  title: string;
+};

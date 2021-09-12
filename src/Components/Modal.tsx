@@ -3,7 +3,7 @@ import "../styles/Modal.css";
 
 type ModalProps = {
   show: boolean;
-  children: any;
+  children?: any;
   closeHandler: () => void;
   cancelHandler?: () => void;
   confirmHandler?: () => void;
@@ -12,11 +12,11 @@ type ModalProps = {
 
 const Modal: React.FC<ModalProps> = ({
   show = false,
-  children,
   closeHandler,
   cancelHandler,
   confirmHandler,
   type = "default",
+  children = <h1>This is default modal.</h1>,
 }) => {
   useEffect(() => {
     if (show) {
