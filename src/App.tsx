@@ -1,33 +1,48 @@
 import React, { useState, useEffect } from "react";
 import { Route, Switch, useHistory } from "react-router-dom";
 import {
+  ENV_VARS,
+  GAME_STEPS,
   getFirstUsedLifeline,
   getQuestionsByDifficulty,
   INITIAL_STATE,
   LIFELINES_ENUM,
+  QUESTION_TIME,
   shuffleArr,
+  availableLifelinesForRevival,
+  getRandomNumberBetween,
 } from "./utils/utils";
-import { QuestionState, QuestionType, AnswerType, LifelineType } from "./types";
+import {
+  QuestionState,
+  QuestionType,
+  AnswerType,
+  LifelineType,
+  BarType,
+} from "./types";
 import { useAxios } from "./hooks/useAxios";
 import {
   Home,
   Modal,
   Loader,
+  BarChart,
   GameRules,
   GameSummary,
   QuestionCard,
 } from "./Components";
 
-const TOTAL_QUESTIONS: number = +process.env.REACT_APP_TOTAL_QUESTIONS!;
-const APP_NAME: string = process.env.REACT_APP_APP_NAME!;
-const QUESTION_PRIZES: string[] =
-  process.env.REACT_APP_QUESTION_PRIZES?.split(";")!;
+const TOTAL_QUESTIONS: number = +ENV_VARS.TOTAL_QUESTIONS!;
+const APP_NAME: string = ENV_VARS.APP_NAME!;
+const QUESTION_PRIZES: string[] = ENV_VARS.QUESTION_PRIZES?.split(";")!;
 
 const App = () => {
   const history = useHistory();
   const [lifelines, setLifeLines] = useState<LifelineType>(
     INITIAL_STATE.LIFELINES
   );
+  const [audiencePollAnswer, setAudiencePollAnswer] = useState<
+    BarType[] | null
+  >(null);
+  const [expertAnswer, setExpertAnswer] = useState<string>("");
   const [doubleDippOptions, setDoubleDippOptions] = useState<[string, string]>([
     "",
     "",
@@ -40,7 +55,7 @@ const App = () => {
   const [wantToQuitGame, setWantToQuitGame] = useState<boolean>(false);
   const [showContestentError, setShowContestentError] =
     useState<boolean>(false);
-  const [seconds, setSeconds] = useState<number>(45);
+  const [seconds, setSeconds] = useState<number>(QUESTION_TIME.EASY);
   const [questions, setQuestions] = useState<QuestionState[]>([]);
   const [questionNumber, setQuestionNumber] = useState<number>(-1);
   const [gameOver, setGameOver] = useState<boolean>(true);
@@ -79,14 +94,34 @@ const App = () => {
   };
 
   const ReviveLifelineConfirmHandler = () => {
-    setLifeLines({
-      ...lifelines,
-      [LIFELINES_ENUM.REVIVE_LIFELINE]: true,
-      [selectedLifelineForRevival]: false,
-    });
+    setSelectedLifeline("");
+
     setTimeout(() => {
+      setLifeLines({
+        ...lifelines,
+        [LIFELINES_ENUM.REVIVE_LIFELINE]: true,
+        [selectedLifelineForRevival]: false,
+      });
+
       setSelectedLifelineForRevival("");
-      setSelectedLifeline("");
+    }, 400);
+  };
+
+  const audiencePollConfirmHanlder = () => {
+    setSelectedLifeline("");
+    setAudiencePollAnswer(null);
+    setTimeout(() => {
+      let id = setInterval(tick, 1000);
+      setTimerId(id);
+    }, 400);
+  };
+
+  const expertAdviceConfirmHandler = () => {
+    setSelectedLifeline("");
+    setExpertAnswer("");
+    setTimeout(() => {
+      let id = setInterval(tick, 1000);
+      setTimerId(id);
     }, 400);
   };
 
@@ -94,7 +129,7 @@ const App = () => {
     if (selectedLifeline === LIFELINES_ENUM.REVIVE_LIFELINE) {
       setTimeout(
         () => setSelectedLifelineForRevival(getFirstUsedLifeline(lifelines)),
-        500
+        400
       );
       return;
     }
@@ -104,19 +139,74 @@ const App = () => {
       [selectedLifeline]: true,
     });
 
-    switch (selectedLifeline) {
-      case LIFELINES_ENUM.DOUBLE_DIPP:
-        clearInterval(timerId);
-        let [option1, option2] = shuffleArr(
-          questions[questionNumber].incorrect_answers
-        ).slice(0, 2);
-        setDoubleDippOptions([option1, option2]);
-        setTimeout(() => {
-          let id = setInterval(tick, 1000);
-          setTimerId(id);
-        }, 1000);
+    if (selectedLifeline === LIFELINES_ENUM.AUDIENCE_POLL) {
+      clearInterval(timerId);
+
+      let scores = shuffleArr([
+        getRandomNumberBetween(10, 25),
+        getRandomNumberBetween(10, 25),
+        getRandomNumberBetween(10, 24),
+      ]);
+      let sum = scores.reduce((total, score) => total + score, 0);
+
+      let correctAnswerIndex = questions[questionNumber].options.findIndex(
+        (option: string) => option === questions[questionNumber].correct_answer
+      );
+
+      scores.splice(correctAnswerIndex, 0, 100 - sum);
+
+      if (questionNumber > 6 && getRandomNumberBetween(1, 10) === 7)
+        scores = shuffleArr(scores);
+
+      let audienceAnswer: BarType[] = INITIAL_STATE.AUDIENCE_POLL_SCORE.map(
+        (el: BarType, index: number) => {
+          return {
+            ...el,
+            score: scores[index],
+          };
+        }
+      );
+
+      return setTimeout(() => setAudiencePollAnswer(audienceAnswer), 400);
     }
-    setSelectedLifeline("");
+
+    if (selectedLifeline === LIFELINES_ENUM.EXPERT_ADVICE) {
+      clearInterval(timerId);
+      let answer: string = "";
+
+      if (
+        questionNumber > GAME_STEPS.SECOND &&
+        getRandomNumberBetween(1, 10) === 7
+      ) {
+        answer =
+          questions[questionNumber].incorrect_answers[
+            getRandomNumberBetween(0, 2)
+          ];
+      } else answer = questions[questionNumber].correct_answer;
+
+      let correctOptionIndex = questions[questionNumber].options.findIndex(
+        (el: string) => el === answer
+      );
+
+      answer = `Option ${
+        ["A", "B", "C", "D"][correctOptionIndex]
+      } => ${answer}`;
+
+      return setTimeout(() => setExpertAnswer(answer), 400);
+    }
+
+    if (LIFELINES_ENUM.DOUBLE_DIPP) {
+      setSelectedLifeline("");
+      clearInterval(timerId);
+      let [option1, option2] = shuffleArr(
+        questions[questionNumber].incorrect_answers
+      ).slice(0, 2);
+      setDoubleDippOptions([option1, option2]);
+      return setTimeout(() => {
+        let id = setInterval(tick, 1000);
+        setTimerId(id);
+      }, 1000);
+    }
   };
 
   const startGame = async () => {
@@ -125,13 +215,13 @@ const App = () => {
     }
     if (timerId) return;
     await fetchData({
-      url: process.env.REACT_APP_BASE_URL,
+      url: ENV_VARS.BASE_URL,
     });
     setGameOver(false);
     setPrizeWon("0");
     setUserAnswers([]);
     setQuestionNumber(0);
-    setSeconds(45);
+    setSeconds(QUESTION_TIME.EASY);
     startTimer();
     history.push("/play");
   };
@@ -197,7 +287,13 @@ const App = () => {
 
   useEffect(() => {
     if (questionNumber > -1) {
-      setSeconds(questionNumber > 9 ? 90 : questionNumber > 4 ? 60 : 45);
+      setSeconds(
+        questionNumber > GAME_STEPS.SECOND
+          ? QUESTION_TIME.HARD
+          : questionNumber > GAME_STEPS.FIRST
+          ? QUESTION_TIME.MEDIUM
+          : QUESTION_TIME.EASY
+      );
       setDoubleDippOptions(["", ""]);
       startTimer();
     }
@@ -259,7 +355,7 @@ const App = () => {
         width={260}
         height={146}
         draggable={false}
-        src={process.env.REACT_APP_BRAND_LOGO_WEBP}
+        src={ENV_VARS.BRAND_LOGO_WEBP}
         alt={APP_NAME}
       />
       {gameOver && <h1 className="brand">{APP_NAME}</h1>}
@@ -291,16 +387,24 @@ const App = () => {
         type={
           ["Audience Poll", "Double Dipp", "Expert Advice"].includes(
             selectedLifelineForRevival
-          )
+          ) ||
+          audiencePollAnswer ||
+          expertAnswer
             ? "info"
             : "confirm"
         }
-        show={!!selectedLifeline}
+        show={
+          !!selectedLifeline || Boolean(audiencePollAnswer) || !!expertAnswer
+        }
         confirmHandler={lifelineConfirmHandler}
         cancelHandler={() => setSelectedLifeline("")}
         closeHandler={
           selectedLifelineForRevival
             ? ReviveLifelineConfirmHandler
+            : Boolean(audiencePollAnswer)
+            ? audiencePollConfirmHanlder
+            : expertAnswer
+            ? expertAdviceConfirmHandler
             : () => setSelectedLifeline("")
         }
       >
@@ -309,20 +413,7 @@ const App = () => {
             <h3 style={{ marginBottom: "1rem" }}>
               Please Select lifeline to revive
             </h3>
-            {[
-              {
-                id: "audiencePoll",
-                key: LIFELINES_ENUM.AUDIENCE_POLL,
-              },
-              {
-                id: "doubleDipp",
-                key: LIFELINES_ENUM.DOUBLE_DIPP,
-              },
-              {
-                id: "expertAdvice",
-                key: LIFELINES_ENUM.EXPERT_ADVICE,
-              },
-            ].map(({ key, id }) => (
+            {availableLifelinesForRevival.map(({ key, id }) => (
               <React.Fragment key={key}>
                 {lifelines[key as keyof LifelineType] && (
                   <div>
@@ -339,6 +430,20 @@ const App = () => {
                 )}
               </React.Fragment>
             ))}
+          </div>
+        ) : audiencePollAnswer ? (
+          <div>
+            <h1 className="modal__header">
+              Below are the results of 'Audience Poll' lifeline
+            </h1>
+            <BarChart data={audiencePollAnswer} />
+          </div>
+        ) : expertAnswer ? (
+          <div>
+            <h1 className="modal__header">
+              According to 'Expert Advice' lifeline correct answer is :
+            </h1>
+            <h2>{expertAnswer}</h2>
           </div>
         ) : (
           <h1>

@@ -28,17 +28,18 @@ html {
 body {
   margin: 0;
   padding: 2rem;
+  display: flex;
+  max-width: 100vw;
   min-height: 100vh;
   text-align: center;
-  font-family: "Lato", sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background: radial-gradient(var(--bg-primary), var(--bg-secondary));
-  display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   scroll-behavior: smooth;
+  font-family: "Lato", sans-serif;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
   transition: scroll 0.3s ease-in-out;
+  background: radial-gradient(var(--bg-primary), var(--bg-secondary));
 }
 
 #root {
@@ -153,6 +154,13 @@ button:active {
 .lineline__revival__container > div > label {
   display: inline-block;
   margin-left: 1rem;
+}
+
+.modal__header {
+  margin-bottom: 2rem;
+  background: linear-gradient(180deg, var(--light-yellow), var(--dark-yellow));
+  background-clip: text;
+  color: transparent;
 }
 
 @media screen and (max-width: 721px) {
