@@ -1,4 +1,5 @@
 import { LifelineType } from "../types";
+export let speech: any = null;
 
 export enum LIFELINES_ENUM {
   REVIVE_LIFELINE = "Revive Lifeline",
@@ -16,6 +17,13 @@ export enum QUESTION_TIME {
 export enum GAME_STEPS {
   FIRST = 4,
   SECOND = 9,
+}
+
+export enum SPEECH {
+  PITCH = 0.85,
+  RATE = 0.85,
+  VOLUME = 0.8,
+  LANG = "en",
 }
 
 export const availableLifelinesForRevival = [
@@ -100,4 +108,48 @@ export const getFirstUsedLifeline = (lifelines: LifelineType) => {
     : lifelines[LIFELINES_ENUM.EXPERT_ADVICE]
     ? LIFELINES_ENUM.EXPERT_ADVICE
     : LIFELINES_ENUM.REVIVE_LIFELINE;
+};
+
+export const initializeTextToSpeech = (): void => {
+  if ("speechSynthesis" in window) {
+    speech = new SpeechSynthesisUtterance();
+    speech.rate = SPEECH.RATE;
+    speech.pitch = SPEECH.PITCH;
+    speech.volume = getFromLocalStorage(`${ENV_VARS.APP_NAME}__sound__enabled`)
+      ? SPEECH.VOLUME
+      : 0;
+    speech.lang = SPEECH.LANG;
+  }
+};
+
+export const cancelSpeak = () => {
+  return new Promise((resolve, reject) => {
+    if ("speechSynthesis" in window) {
+      speechSynthesis.speaking && window.speechSynthesis.cancel();
+      resolve(null);
+    }
+  });
+};
+
+export const toggleSpeak = (value: boolean) => {
+  if ("speechSynthesis" in window) {
+    speech.volume = value ? 0 : SPEECH.VOLUME;
+  }
+};
+
+export const speak = (msg: string) => {
+  if ("speechSynthesis" in window) {
+    cancelSpeak().then(() => {
+      speech.text = msg;
+      speechSynthesis.speak(speech);
+    });
+  }
+};
+
+export const saveToLocalStorage = (key: string, value: any) => {
+  localStorage.setItem(key, JSON.stringify(value));
+};
+
+export const getFromLocalStorage = (key: any) => {
+  return !key ? null : JSON.parse(localStorage.getItem("" + key) as string);
 };

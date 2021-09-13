@@ -5,5 +5,15 @@ import BarChart from "./BarChart";
 import GameRules from "./GameRules";
 import GameSummary from "./GameSummary";
 import QuestionCard from "./QuestionCard";
+import SpeakerIcon from "./SpeakerIcon";
 
-export { Home, Modal, Loader, BarChart, GameRules, GameSummary, QuestionCard };
+export {
+  Home,
+  Modal,
+  Loader,
+  BarChart,
+  GameRules,
+  GameSummary,
+  QuestionCard,
+  SpeakerIcon,
+};

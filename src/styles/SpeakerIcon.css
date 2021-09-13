@@ -1,0 +1,94 @@
+.container {
+  position: relative;
+  border: 2px solid transparent;
+  width: 5rem;
+  height: 5rem;
+  max-width: 100px;
+  max-height: 100px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  justify-content: center;
+  background: radial-gradient(var(--bg-primary), var(--bg-secondary));
+  filter: drop-shadow(0 0 1px var(--white));
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 20;
+  transition: border-color 0.2s ease-in-out;
+}
+
+.container:hover,
+.container:focus {
+  outline: none;
+  border-color: var(--dark-yellow);
+}
+
+span {
+  display: inline-block;
+  position: absolute;
+}
+
+.part-1 {
+  height: 40%;
+  width: 20%;
+  left: 25%;
+  background: var(--white);
+  clip-path: polygon(100% 0, 100% 100%, 0 75%, 0 25%);
+}
+
+.part-2 {
+  width: 15%;
+  height: 20.5%;
+  background: var(--white);
+  top: 40%;
+  left: 15%;
+}
+
+.line {
+  clip-path: circle(50.4% at 93% 0);
+  background: transparent;
+  border: 3px solid var(--white);
+  border-radius: 50%;
+  transform: rotate(50deg);
+  border-radius: 50%;
+}
+
+.line-1 {
+  height: 30%;
+  width: 30%;
+  top: 35%;
+  left: 27.5%;
+}
+
+.line-2 {
+  height: 45%;
+  width: 45%;
+  top: 27.5%;
+  left: 22.5%;
+}
+
+.line-3 {
+  height: 60%;
+  width: 60%;
+  top: 20%;
+  left: 18%;
+}
+
+.close {
+  height: 80%;
+  width: 4px;
+  border-radius: 10px;
+  transform: rotate(50deg);
+  background: var(--dark-yellow);
+  margin-bottom: 5%;
+  left: 45%;
+  transition: all 0.3s ease-in-out;
+}
+
+.show {
+  transform: rotate(50deg) translateY(0%);
+}
+
+.hide {
+  transform: rotate(50deg) translateY(200%);
+}
