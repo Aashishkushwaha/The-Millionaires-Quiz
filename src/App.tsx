@@ -11,6 +11,11 @@ import {
   shuffleArr,
   availableLifelinesForRevival,
   getRandomNumberBetween,
+  speak,
+  cancelSpeak,
+  getFromLocalStorage,
+  saveToLocalStorage,
+  toggleSpeak,
 } from "./utils/utils";
 import {
   QuestionState,
@@ -28,6 +33,7 @@ import {
   GameRules,
   GameSummary,
   QuestionCard,
+  SpeakerIcon,
 } from "./Components";
 
 const TOTAL_QUESTIONS: number = +ENV_VARS.TOTAL_QUESTIONS!;
@@ -36,6 +42,9 @@ const QUESTION_PRIZES: string[] = ENV_VARS.QUESTION_PRIZES?.split(";")!;
 
 const App = () => {
   const history = useHistory();
+  const [soundEnabled, setSoundEnabled] = useState<boolean>(
+    getFromLocalStorage(`${ENV_VARS.APP_NAME}__sound__enabled`) ?? false
+  );
   const [lifelines, setLifeLines] = useState<LifelineType>(
     INITIAL_STATE.LIFELINES
   );
@@ -47,7 +56,7 @@ const App = () => {
     "",
     "",
   ]);
-  const [contestantName, setContestantName] = useState<string>("");
+  const [contestantName, setContestantName] = useState<string>("Aashish");
   const [selectedLifelineForRevival, setSelectedLifelineForRevival] =
     useState<string>("");
   const [selectedLifeline, setSelectedLifeline] = useState<string>("");
@@ -67,6 +76,13 @@ const App = () => {
 
   const { fetchData, data, loading, error } = useAxios();
 
+  const toggleSound = () => {
+    let a = soundEnabled;
+    toggleSpeak(a);
+    saveToLocalStorage(`${ENV_VARS.APP_NAME}__sound__enabled`, !soundEnabled);
+    setSoundEnabled((s) => !s);
+  };
+
   const tick = () => {
     setSeconds((s) => s - 1);
   };
@@ -81,16 +97,30 @@ const App = () => {
   };
 
   const gameOverMethod = () => {
-    setTimeout(() => {
-      setTimerId(null);
-      setGameOver(true);
-      setLifeLines(INITIAL_STATE.LIFELINES);
-      history.push("/summary");
-    }, 1000);
+    const { correct_answer = "" } = questions[questionNumber];
+    questionNumber < TOTAL_QUESTIONS &&
+      speak(`Correct answer was ${correct_answer}`);
+    setTimeout(
+      () => {
+        setTimerId(null);
+        setGameOver(true);
+        setLifeLines(INITIAL_STATE.LIFELINES);
+        history.push("/summary");
+      },
+      correct_answer?.length > 20
+        ? 4000
+        : correct_answer?.length > 30
+        ? 6000
+        : correct_answer?.length > 40
+        ? 8000
+        : 3000
+    );
   };
 
   const chooseLifeline = (e: React.MouseEvent<HTMLButtonElement>) => {
-    setSelectedLifeline(e.currentTarget.value);
+    const { value } = e.currentTarget;
+    setSelectedLifeline(value);
+    speak(`Are you sure you want to use ${value} lifeline?`);
   };
 
   const ReviveLifelineConfirmHandler = () => {
@@ -127,10 +157,10 @@ const App = () => {
 
   const lifelineConfirmHandler = () => {
     if (selectedLifeline === LIFELINES_ENUM.REVIVE_LIFELINE) {
-      setTimeout(
-        () => setSelectedLifelineForRevival(getFirstUsedLifeline(lifelines)),
-        400
-      );
+      setTimeout(() => {
+        speak("Please select lifeline to revive.");
+        setSelectedLifelineForRevival(getFirstUsedLifeline(lifelines));
+      }, 400);
       return;
     }
 
@@ -167,7 +197,14 @@ const App = () => {
         }
       );
 
-      return setTimeout(() => setAudiencePollAnswer(audienceAnswer), 400);
+      return setTimeout(() => {
+        setAudiencePollAnswer(audienceAnswer);
+        speak(
+          `According to audience poll lifeline correct answer is option. ${
+            ["a", "b", "c", "d"][correctAnswerIndex]
+          }`
+        );
+      }, 400);
     }
 
     if (selectedLifeline === LIFELINES_ENUM.EXPERT_ADVICE) {
@@ -192,7 +229,14 @@ const App = () => {
         ["A", "B", "C", "D"][correctOptionIndex]
       } => ${answer}`;
 
-      return setTimeout(() => setExpertAnswer(answer), 400);
+      return setTimeout(() => {
+        setExpertAnswer(answer);
+        speak(
+          `According to 'Expert Advice' lifeline correct answer is ${answer
+            .split("=>")
+            .join(" ")}`
+        );
+      }, 400);
     }
 
     if (LIFELINES_ENUM.DOUBLE_DIPP) {
@@ -203,9 +247,10 @@ const App = () => {
       ).slice(0, 2);
       setDoubleDippOptions([option1, option2]);
       return setTimeout(() => {
+        speak(`Two wrong answers have been vanished.`);
         let id = setInterval(tick, 1000);
         setTimerId(id);
-      }, 1000);
+      }, 500);
     }
   };
 
@@ -227,10 +272,12 @@ const App = () => {
   };
 
   const goToHome = () => {
+    cancelSpeak();
     history.push("/");
   };
 
   const quitGame = () => {
+    speak("Are you sure you want to quit?");
     setWantToQuitGame(true);
   };
 
@@ -238,8 +285,7 @@ const App = () => {
     setSelectedLifelineForRevival(selectedRevivalLifeline);
   };
 
-  const gameQuitConfirmHandler = () => {
-    clearInterval(timerId);
+  const quitGameConfirmHandler = () => {
     const answer: AnswerType = {
       correct: false,
       answer: "",
@@ -248,10 +294,11 @@ const App = () => {
     };
     setUserAnswers((answers) => [...answers, answer]);
     setWantToQuitGame(false);
-    setTimeout(() => gameOverMethod(), 1000);
+    setTimeout(() => gameOverMethod(), 200);
   };
 
   const checkAnswer = (e: React.MouseEvent<HTMLButtonElement>) => {
+    cancelSpeak();
     const answer = e.currentTarget.value;
 
     const correct = questions[questionNumber].correct_answer === answer;
@@ -281,6 +328,7 @@ const App = () => {
 
   useEffect(() => {
     window.onbeforeunload = function () {
+      cancelSpeak();
       return "Are you sure you want to leave?";
     };
   }, []);
@@ -296,6 +344,11 @@ const App = () => {
       );
       setDoubleDippOptions(["", ""]);
       startTimer();
+    }
+    if (questionNumber === TOTAL_QUESTIONS) {
+      setTimerId(null);
+      clearInterval(timerId);
+      setGameOver(true);
     }
   }, [questionNumber]);
 
@@ -347,7 +400,12 @@ const App = () => {
     }
   }, [data]);
 
-  if (error) return <div>Some Error Occurred</div>;
+  if (error)
+    return (
+      <div className="error__container">
+        <h1>Some Error Occurred</h1>
+      </div>
+    );
 
   return (
     <div className="App">
@@ -359,13 +417,11 @@ const App = () => {
         alt={APP_NAME}
       />
       {gameOver && <h1 className="brand">{APP_NAME}</h1>}
-
       {/* show loader while game is laoding or next question is loading */}
       {(loading || loadingNextQuestion) && <Loader />}
-
       <Modal
         type={wantToQuitGame ? "confirm" : showRules ? "info" : "default"}
-        confirmHandler={wantToQuitGame ? gameQuitConfirmHandler : () => {}}
+        confirmHandler={wantToQuitGame ? quitGameConfirmHandler : () => {}}
         cancelHandler={
           wantToQuitGame ? () => setWantToQuitGame(false) : () => {}
         }
@@ -382,7 +438,6 @@ const App = () => {
         {showContestentError && <h1>Please Provide Contestent Name!</h1>}
         {wantToQuitGame && <h1>Are you sure you want to quit?</h1>}
       </Modal>
-
       <Modal
         type={
           ["Audience Poll", "Double Dipp", "Expert Advice"].includes(
@@ -411,7 +466,7 @@ const App = () => {
         {selectedLifelineForRevival ? (
           <div className="lineline__revival__container">
             <h3 style={{ marginBottom: "1rem" }}>
-              Please Select lifeline to revive
+              Please select lifeline to revive
             </h3>
             {availableLifelinesForRevival.map(({ key, id }) => (
               <React.Fragment key={key}>
@@ -451,7 +506,6 @@ const App = () => {
           </h1>
         )}
       </Modal>
-
       <Switch>
         <Route path="/" exact>
           <Home
@@ -473,7 +527,6 @@ const App = () => {
             contestantName={contestantName}
             question={questions[questionNumber]}
             doubleDippOptions={doubleDippOptions}
-            options={questions[questionNumber]?.options}
             userAnswer={userAnswers ? userAnswers[questionNumber] : null}
           />
         </Route>
@@ -490,6 +543,15 @@ const App = () => {
           </>
         </Route>
       </Switch>
+      <div
+        style={{
+          position: "fixed",
+          right: "20px",
+          bottom: "20px",
+        }}
+      >
+        <SpeakerIcon enabled={soundEnabled} toggle={toggleSound} />
+      </div>
     </div>
   );
 };

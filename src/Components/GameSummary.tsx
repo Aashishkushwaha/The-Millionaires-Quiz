@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "../styles/GameSummary.css";
+import { speak } from "../utils/utils";
 
 type GameSummaryProps = {
   prizeWon: string;
@@ -14,6 +15,14 @@ const GameSummary: React.FC<GameSummaryProps> = ({
   contestantName,
   questionNumber,
 }) => {
+  useEffect(() => {
+    speak(
+      `Congratulations! ${contestantName}, You won ${prizeWon
+        .split(",")
+        .join("")} Rupees`
+    );
+  }, [contestantName, prizeWon]);
+
   return (
     <div className="summary__container">
       {questionNumber !== -1 && (
@@ -21,7 +30,8 @@ const GameSummary: React.FC<GameSummaryProps> = ({
           <h1>Game Over</h1>
 
           <h2>
-            Congratulations! {contestantName}, You won <strong> - ₹ {prizeWon}</strong>
+            Congratulations! {contestantName}, You won{" "}
+            <strong> - ₹ {prizeWon}</strong>
           </h2>
         </>
       )}

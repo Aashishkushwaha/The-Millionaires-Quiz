@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import "../styles/Modal.css";
+import { cancelSpeak } from "../utils/utils";
 
 type ModalProps = {
   show: boolean;
@@ -28,11 +29,16 @@ const Modal: React.FC<ModalProps> = ({
     }
   }, [show]);
 
+  const handler = (cb: Function | undefined): void => {
+    cancelSpeak();
+    cb && cb();
+  };
+
   return (
     <>
       <div
         className={`backdrop ${show ? "show__backdrop" : "hide__backdrop"}`}
-        onClick={closeHandler}
+        onClick={() => handler(closeHandler)}
       />
       <div
         className={`modal__container ${show ? "show__modal" : "hide__modal"}`}
@@ -41,7 +47,7 @@ const Modal: React.FC<ModalProps> = ({
           <button
             tabIndex={!show ? -1 : 0}
             className="modal__close-btn flex"
-            onClick={closeHandler}
+            onClick={() => handler(closeHandler)}
           >
             &times;
           </button>
@@ -54,14 +60,14 @@ const Modal: React.FC<ModalProps> = ({
                 <button
                   tabIndex={!show ? -1 : 0}
                   className="confirm__btn"
-                  onClick={confirmHandler}
+                  onClick={() => handler(confirmHandler)}
                 >
                   Confirm
                 </button>
                 <button
                   tabIndex={!show ? -1 : 0}
                   className="cancel__btn"
-                  onClick={cancelHandler}
+                  onClick={() => handler(cancelHandler)}
                 >
                   Cancel
                 </button>
@@ -70,7 +76,7 @@ const Modal: React.FC<ModalProps> = ({
               <button
                 tabIndex={!show ? -1 : 0}
                 className="info__button"
-                onClick={closeHandler}
+                onClick={() => handler(closeHandler)}
               >
                 Okay
               </button>
