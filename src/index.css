@@ -158,9 +158,11 @@ button:active {
 
 .modal__header {
   margin-bottom: 2rem;
-  background: linear-gradient(180deg, var(--light-yellow), var(--dark-yellow));
+  background: linear-gradient(180deg, var(--bg-primary), var(--bg-secondary));
   background-clip: text;
   color: transparent;
+  font-weight: 700;
+  font-size: 2rem;
 }
 
 @media screen and (max-width: 721px) {

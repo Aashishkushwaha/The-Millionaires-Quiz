@@ -5,7 +5,9 @@ const GameRules = () => {
   return (
     <div>
       <ul>
-        <h2>Below are the rules of {ENV_VARS.APP_NAME}</h2>
+        <h2 className="modal__header">
+          Below are the rules of {ENV_VARS.APP_NAME}
+        </h2>
         {`Rule,Rule,Rule,Rule,Rule,Rule,Rule,Rule,Rule,Rule,Rule,Rule,Rule,RuleRule,Rule,Rule,Rule,Rule,Rule,Rule,Rule,Rule,Rule,Rule,Rule
                     Rule,Rule,Rule,Rule,Rule,Rule,Rule,Rule,Rule,Rule,Rule,Rule`
           .split(",")
