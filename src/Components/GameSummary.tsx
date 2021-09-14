@@ -16,11 +16,12 @@ const GameSummary: React.FC<GameSummaryProps> = ({
   questionNumber,
 }) => {
   useEffect(() => {
-    speak(
-      `Congratulations! ${contestantName}, You won ${prizeWon
-        .split(",")
-        .join("")} Rupees`
-    );
+    prizeWon &&
+      speak(
+        `Congratulations! ${contestantName}, You won ${prizeWon
+          .split(",")
+          .join("")} Rupees`
+      );
   }, [contestantName, prizeWon]);
 
   return (

@@ -35,6 +35,7 @@ import {
   QuestionCard,
   SpeakerIcon,
 } from "./Components";
+const DOMPurify = require("dompurify")(window);
 
 const TOTAL_QUESTIONS: number = +ENV_VARS.TOTAL_QUESTIONS!;
 const APP_NAME: string = ENV_VARS.APP_NAME!;
@@ -322,6 +323,13 @@ const App = () => {
         setQuestionNumber((q) => q + 1);
       }, 3000);
     } else {
+      setPrizeWon(
+        questionNumber > GAME_STEPS.SECOND
+          ? QUESTION_PRIZES[GAME_STEPS.SECOND]
+          : questionNumber > GAME_STEPS.FIRST
+          ? QUESTION_PRIZES[GAME_STEPS.FIRST]
+          : "0"
+      );
       gameOverMethod();
     }
   };
@@ -498,7 +506,11 @@ const App = () => {
             <h1 className="modal__header">
               According to 'Expert Advice' lifeline correct answer is :
             </h1>
-            <h2>{expertAnswer}</h2>
+            <h2
+              dangerouslySetInnerHTML={{
+                __html: DOMPurify.sanitize(expertAnswer),
+              }}
+            />
           </div>
         ) : (
           <h1>

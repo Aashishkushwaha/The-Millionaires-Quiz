@@ -86,9 +86,27 @@ span {
 }
 
 .show {
-  transform: rotate(50deg) translateY(0%);
+  animation: showAnimation 0.2s 2 ease-in-out;
 }
 
 .hide {
   transform: rotate(50deg) translateY(200%);
+}
+
+@keyframes showAnimation {
+  20% {
+    transform: rotate(50deg) translateY(-20%);
+  }
+
+  50% {
+    transform: rotate(50deg) translateY(20%);
+  }
+
+  70% {
+    transform: rotate(50deg) translateY(-20%);
+  }
+
+  100% {
+    transform: rotate(50deg) translateY(0%);
+  }
 }

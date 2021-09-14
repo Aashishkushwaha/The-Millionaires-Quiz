@@ -5,12 +5,7 @@ import App from "./App";
 import dotenv from "dotenv";
 import reportWebVitals from "./reportWebVitals";
 import "./index.css";
-import {
-  ENV_VARS,
-  getFromLocalStorage,
-  initializeTextToSpeech,
-  saveToLocalStorage,
-} from "./utils/utils";
+import { initializeTextToSpeech } from "./utils/utils";
 
 dotenv.config();
 
