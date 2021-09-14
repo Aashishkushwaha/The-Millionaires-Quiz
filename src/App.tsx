@@ -57,7 +57,7 @@ const App = () => {
     "",
     "",
   ]);
-  const [contestantName, setContestantName] = useState<string>("Aashish");
+  const [contestantName, setContestantName] = useState<string>("");
   const [selectedLifelineForRevival, setSelectedLifelineForRevival] =
     useState<string>("");
   const [selectedLifeline, setSelectedLifeline] = useState<string>("");
@@ -443,7 +443,7 @@ const App = () => {
         }
       >
         {showRules && <GameRules />}
-        {showContestentError && <h1>Please Provide Contestent Name!</h1>}
+        {showContestentError && <h1>Please provide contestant name!</h1>}
         {wantToQuitGame && <h1>Are you sure you want to quit?</h1>}
       </Modal>
       <Modal
