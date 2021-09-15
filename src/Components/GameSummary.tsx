@@ -19,8 +19,8 @@ const GameSummary: React.FC<GameSummaryProps> = ({
     prizeWon &&
       speak(
         `${
-          +prizeWon === 0 ? "Tough luck" : "Congratulations"
-        }! ${contestantName}, You won ${prizeWon.split(",").join("")} Rupees`
+          +prizeWon === 0 ? "Tough luck" : "Congratulations!"
+        } ${contestantName}, You won ${prizeWon.split(",").join("")} Rupees`
       );
   }, [contestantName, prizeWon]);
 
@@ -31,8 +31,8 @@ const GameSummary: React.FC<GameSummaryProps> = ({
           <h1>Game Over</h1>
 
           <h2>
-            Congratulations! {contestantName}, You won{" "}
-            <strong> - ₹ {prizeWon}</strong>
+            {+prizeWon === 0 ? "Tough luck!" : "Congratulations!"}{" "}
+            {contestantName}, You won <strong> - ₹ {prizeWon}</strong>
           </h2>
         </>
       )}

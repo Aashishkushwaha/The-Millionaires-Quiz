@@ -165,6 +165,72 @@ button:active {
   font-size: 2rem;
 }
 
+.icon__container {
+  position: relative;
+  border: 2px solid transparent;
+  width: 5rem;
+  height: 5rem;
+  max-width: 100px;
+  max-height: 100px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  justify-content: center;
+  background: radial-gradient(var(--bg-primary), var(--bg-secondary));
+  filter: drop-shadow(0 0 1px var(--white));
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 20;
+  transition: border-color 0.2s ease-in-out;
+}
+
+.recogniser__modal-container h1 {
+  margin-bottom: 1.6rem;
+}
+
+.icon__close {
+  height: 80%;
+  width: 4px;
+  border-radius: 10px;
+  transform: rotate(50deg);
+  background: var(--dark-yellow);
+  margin-bottom: 5%;
+  left: 45%;
+  transition: all 0.3s ease-in-out;
+}
+
+.icon__show {
+  animation: closeAnimation 0.2s 2 ease-in-out;
+}
+
+.icon__hide {
+  transform: rotate(50deg) translateY(200%);
+}
+
+.icon__container:hover,
+.icon__container:focus {
+  outline: none;
+  border-color: var(--dark-yellow);
+}
+
+@keyframes closeAnimation {
+  20% {
+    transform: rotate(50deg) translateY(-20%);
+  }
+
+  50% {
+    transform: rotate(50deg) translateY(20%);
+  }
+
+  70% {
+    transform: rotate(50deg) translateY(-20%);
+  }
+
+  100% {
+    transform: rotate(50deg) translateY(0%);
+  }
+}
+
 @media screen and (max-width: 721px) {
   html {
     font-size: 62.5%;

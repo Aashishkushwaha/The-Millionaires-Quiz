@@ -16,6 +16,8 @@ import {
   getFromLocalStorage,
   saveToLocalStorage,
   toggleSpeak,
+  recogniser,
+  getMachedAnswerIndex,
 } from "./utils/utils";
 import {
   QuestionState,
@@ -34,6 +36,7 @@ import {
   GameSummary,
   QuestionCard,
   SpeakerIcon,
+  MicrophoneIcon,
 } from "./Components";
 const DOMPurify = require("dompurify")(window);
 
@@ -43,9 +46,12 @@ const QUESTION_PRIZES: string[] = ENV_VARS.QUESTION_PRIZES?.split(";")!;
 
 const App = () => {
   const history = useHistory();
+  const [speaking, setSpeaking] = useState<boolean>(false);
+  const [microphoneEnabled, setMicrophoneEnabled] = useState<boolean>(false);
   const [soundEnabled, setSoundEnabled] = useState<boolean>(
     getFromLocalStorage(`${ENV_VARS.APP_NAME}__sound__enabled`) ?? false
   );
+  const [recognitionText, setRecognitionText] = useState<string>("");
   const [lifelines, setLifeLines] = useState<LifelineType>(
     INITIAL_STATE.LIFELINES
   );
@@ -77,6 +83,13 @@ const App = () => {
 
   const { fetchData, data, loading, error } = useAxios();
 
+  const toggleMicrophone = () => {
+    let a = microphoneEnabled;
+    !a && recogniser.start();
+    a && recogniser.stop();
+    setMicrophoneEnabled((m) => !m);
+  };
+
   const toggleSound = () => {
     let a = soundEnabled;
     toggleSpeak(a);
@@ -104,6 +117,8 @@ const App = () => {
     setTimeout(
       () => {
         setTimerId(null);
+        setRecognitionText("");
+        setMicrophoneEnabled(false);
         setGameOver(true);
         setLifeLines(INITIAL_STATE.LIFELINES);
         history.push("/summary");
@@ -298,9 +313,21 @@ const App = () => {
     setTimeout(() => gameOverMethod(), 200);
   };
 
-  const checkAnswer = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const checkAnswer = (e?: React.MouseEvent<HTMLButtonElement>) => {
     cancelSpeak();
-    const answer = e.currentTarget.value;
+    let answer = "";
+
+    if (recognitionText) {
+      setRecognitionText("");
+      let matchedIndex = getMachedAnswerIndex(
+        recognitionText.toLocaleLowerCase()
+      );
+
+      if (matchedIndex !== -1)
+        answer = questions[questionNumber].options[matchedIndex];
+    } else {
+      answer = e?.currentTarget.value || "";
+    }
 
     const correct = questions[questionNumber].correct_answer === answer;
 
@@ -342,7 +369,43 @@ const App = () => {
   }, []);
 
   useEffect(() => {
+    if (recogniser) {
+      const startRecogniserHandler = () => {
+        cancelSpeak();
+        setSpeaking(true);
+      };
+
+      const recogniserResultsHandler = (e: any) => {
+        setSpeaking(false);
+        setRecognitionText(e.results[0][0].transcript);
+      };
+
+      const recogniserEndHandler = () => {
+        setSpeaking(false);
+        setMicrophoneEnabled((m: boolean) => !m);
+      };
+
+      recogniser.addEventListener("end", recogniserEndHandler);
+      recogniser.addEventListener("start", startRecogniserHandler);
+      recogniser.addEventListener("result", recogniserResultsHandler);
+
+      // recogniser.addEventListener("error", () => {
+      //   setMicrophoneEnabled((m: boolean) => !m);
+      //   alert("not able to recognise");
+      // });
+
+      return () => {
+        recogniser.removeEventListener("end", recogniserEndHandler);
+        recogniser.removeEventListener("start", startRecogniserHandler);
+        recogniser.removeEventListener("result", recogniserResultsHandler);
+      };
+    }
+  }, []);
+
+  useEffect(() => {
     if (questionNumber > -1) {
+      setRecognitionText("");
+      setMicrophoneEnabled(false);
       setSeconds(
         questionNumber > GAME_STEPS.SECOND
           ? QUESTION_TIME.HARD
@@ -426,25 +489,64 @@ const App = () => {
       />
       {gameOver && <h1 className="brand">{APP_NAME}</h1>}
       {/* show loader while game is laoding or next question is loading */}
-      {(loading || loadingNextQuestion) && <Loader />}
+      {(loading || loadingNextQuestion || speaking) && <Loader />}
+
       <Modal
-        type={wantToQuitGame ? "confirm" : showRules ? "info" : "default"}
-        confirmHandler={wantToQuitGame ? quitGameConfirmHandler : () => {}}
-        cancelHandler={
-          wantToQuitGame ? () => setWantToQuitGame(false) : () => {}
+        type={
+          wantToQuitGame || !!recognitionText
+            ? "confirm"
+            : showRules
+            ? "info"
+            : "default"
         }
-        show={showRules || showContestentError || wantToQuitGame}
+        confirmHandler={
+          wantToQuitGame
+            ? quitGameConfirmHandler
+            : !!recognitionText
+            ? checkAnswer
+            : () => {}
+        }
+        cancelHandler={
+          wantToQuitGame
+            ? () => setWantToQuitGame(false)
+            : !!recognitionText
+            ? () => setRecognitionText("")
+            : () => {}
+        }
+        show={
+          showRules ||
+          showContestentError ||
+          wantToQuitGame ||
+          !!recognitionText
+        }
         closeHandler={
           showRules
             ? () => setShowRules(false)
             : wantToQuitGame
             ? () => setWantToQuitGame(false)
+            : !!recognitionText
+            ? () => setRecognitionText("")
             : () => setShowContestentError(false)
         }
       >
         {showRules && <GameRules />}
         {showContestentError && <h1>Please provide contestant name!</h1>}
         {wantToQuitGame && <h1>Are you sure you want to quit?</h1>}
+        {!!recognitionText && (
+          <div className="recogniser__modal-container">
+            <h3 className="modal__header">
+              Check current answer below, if not correct tell us new answer
+              using microphone.
+            </h3>
+            <h1>current answer - {recognitionText}</h1>
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <MicrophoneIcon
+                toggle={toggleMicrophone}
+                enabled={microphoneEnabled}
+              />
+            </div>
+          </div>
+        )}
       </Modal>
       <Modal
         type={
@@ -555,6 +657,23 @@ const App = () => {
           </>
         </Route>
       </Switch>
+      {(!gameOver ||
+        ("webkitSpeechRecognition" in window &&
+          "speechRecognition" in window)) && (
+        <div
+          style={{
+            position: "fixed",
+            right: "20px",
+            bottom: "8.2rem",
+          }}
+        >
+          <MicrophoneIcon
+            enabled={microphoneEnabled}
+            toggle={toggleMicrophone}
+          />
+        </div>
+      )}
+
       <div
         style={{
           position: "fixed",

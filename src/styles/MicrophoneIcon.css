@@ -1,0 +1,76 @@
+.container:hover,
+.container:focus {
+  outline: none;
+  border-color: var(--dark-yellow);
+}
+
+span {
+  display: inline-block;
+  position: absolute;
+}
+
+.microphone__part-1 {
+  top: 20%;
+  left: 50%;
+  width: 20%;
+  height: 40%;
+  border-radius: 1000rem;
+  background: var(--white);
+  transform: translateX(-50%);
+}
+
+.microphone__part-2 {
+  top: 10%;
+  width: 35%;
+  height: 60%;
+  border-radius: 1rem;
+  border: 2px solid var(--white);
+  clip-path: polygon(0 60%, 100% 60%, 100% 100%, 0 100%);
+}
+
+.microphone__line {
+  background-color: var(--white);
+}
+
+.microphone__line-1 {
+  height: 13%;
+  width: 4%;
+  top: 70.5%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.microphone__line-2 {
+  top: 80%;
+  height: 4%;
+  width: 40%;
+  left: 50%;
+  border-radius: 100rem;
+  transform: translateX(-50%);
+}
+
+.line-3 {
+  height: 60%;
+  width: 60%;
+  top: 20%;
+  left: 18%;
+}
+
+.close {
+  height: 80%;
+  width: 4px;
+  border-radius: 10px;
+  transform: rotate(50deg);
+  background: var(--dark-yellow);
+  margin-bottom: 5%;
+  left: 45%;
+  transition: all 0.3s ease-in-out;
+}
+
+.show {
+  animation: showAnimation 0.2s 2 ease-in-out;
+}
+
+.hide {
+  transform: rotate(50deg) translateY(200%);
+}
