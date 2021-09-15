@@ -5,11 +5,15 @@ import App from "./App";
 import dotenv from "dotenv";
 import reportWebVitals from "./reportWebVitals";
 import "./index.css";
-import { initializeTextToSpeech } from "./utils/utils";
+import {
+  initializeSpeechRecogniser,
+  initializeTextToSpeech,
+} from "./utils/utils";
 
 dotenv.config();
 
 initializeTextToSpeech();
+initializeSpeechRecogniser();
 
 ReactDOM.render(
   <React.StrictMode>

@@ -6,6 +6,7 @@ import GameRules from "./GameRules";
 import GameSummary from "./GameSummary";
 import QuestionCard from "./QuestionCard";
 import SpeakerIcon from "./SpeakerIcon";
+import MicrophoneIcon from "./MicrophoneIcon";
 
 export {
   Home,
@@ -13,7 +14,8 @@ export {
   Loader,
   BarChart,
   GameRules,
+  SpeakerIcon,
   GameSummary,
   QuestionCard,
-  SpeakerIcon,
+  MicrophoneIcon,
 };

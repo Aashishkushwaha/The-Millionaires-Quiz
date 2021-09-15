@@ -1,5 +1,6 @@
 import { LifelineType } from "../types";
 export let speech: any = null;
+export let recogniser: any = null;
 
 export enum LIFELINES_ENUM {
   REVIVE_LIFELINE = "Revive Lifeline",
@@ -110,6 +111,19 @@ export const getFirstUsedLifeline = (lifelines: LifelineType) => {
     : LIFELINES_ENUM.REVIVE_LIFELINE;
 };
 
+export const initializeSpeechRecogniser = (): void => {
+  if ("webkitSpeechRecognition" in window || "speechRecognition" in window) {
+    try {
+      let rec =
+        (window as any).webkitSpeechRecognition ||
+        (window as any).speechRecognition;
+      recogniser = new rec();
+    } catch (error) {
+      alert("Speech recognition is not avaible for this browser");
+    }
+  }
+};
+
 export const initializeTextToSpeech = (): void => {
   if ("speechSynthesis" in window) {
     speech = new SpeechSynthesisUtterance();
@@ -144,6 +158,52 @@ export const speak = (msg: string) => {
       speechSynthesis.speak(speech);
     });
   }
+};
+
+export const getMachedAnswerIndex = (recognisedText: string): number => {
+  if (
+    recognisedText.includes("1") ||
+    recognisedText.includes("one") ||
+    recognisedText.includes("first") ||
+    recognisedText.includes("option a") ||
+    recognisedText.includes("optiona")
+  )
+    return 0;
+  else if (
+    recognisedText.includes("2") ||
+    recognisedText.includes("two") ||
+    recognisedText.includes("to") ||
+    recognisedText.includes("second") ||
+    recognisedText.includes("option b") ||
+    recognisedText.includes("option be")
+  )
+    return 1;
+  if (
+    recognisedText.includes("3") ||
+    recognisedText.includes("three") ||
+    recognisedText.includes("tree") ||
+    recognisedText.includes("see") ||
+    recognisedText.includes("sea") ||
+    recognisedText.includes("c") ||
+    recognisedText.includes("option c") ||
+    recognisedText.includes("option ce") ||
+    recognisedText.includes("option sea") ||
+    recognisedText.includes("option see")
+  )
+    return 2;
+  if (
+    recognisedText.includes("4") ||
+    recognisedText.includes("four") ||
+    recognisedText.includes("for") ||
+    recognisedText.includes("d") ||
+    recognisedText.includes("option d") ||
+    recognisedText.includes("option de") ||
+    recognisedText.includes("option dea") ||
+    recognisedText.includes("option dee")
+  )
+    return 3;
+
+  return -1;
 };
 
 export const saveToLocalStorage = (key: string, value: any) => {
