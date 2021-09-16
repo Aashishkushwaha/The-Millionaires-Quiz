@@ -17,6 +17,8 @@ import {
   saveToLocalStorage,
   toggleSpeak,
   recogniser,
+  getFromSessionStorage,
+  saveToSessionStorage,
 } from "./utils/utils";
 import {
   checkForLifeline,
@@ -68,7 +70,9 @@ const App = () => {
     "",
     "",
   ]);
-  const [contestantName, setContestantName] = useState<string>("");
+  const [contestantName, setContestantName] = useState<string>(
+    getFromSessionStorage(`${ENV_VARS.APP_NAME}__contestantName`) || ""
+  );
   const [selectedLifelineForRevival, setSelectedLifelineForRevival] =
     useState<string>("");
   const [selectedLifeline, setSelectedLifeline] = useState<string>("");
@@ -154,6 +158,14 @@ const App = () => {
   const chooseLifeline = (e: React.MouseEvent<HTMLButtonElement>) => {
     setSelectedLifeline(e.currentTarget.value);
   };
+
+  useEffect(() => {
+    if (contestantName)
+      saveToSessionStorage(
+        `${ENV_VARS.APP_NAME}__contestantName`,
+        contestantName
+      );
+  }, [contestantName]);
 
   useEffect(() => {
     if (selectedLifeline)
