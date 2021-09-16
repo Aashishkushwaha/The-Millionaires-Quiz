@@ -6,13 +6,17 @@ export const GAME_RULES = [
   `The Millionaire's Quiz will have total 16 questions, where each question will be having particular prize associated with it.`,
   `Each question will be having 4 options, one of them will be correct & rest will be incorrect.`,
   `If you answer the question correctly then your maximum prize till that question will be the prize associated with that question.`,
+  `If you want to answer the question you can click on the option or you can speak the answer using microphone.`,
+  `While answering please use the correct option or please use words like 'option' or 'answer' - [your selected option]. Eg. 'option A' | 'answer A' | 'option 1' | 'answer 1'.`,
   `You will be getting 4 lifelines to help yourself whenever you're not sure about the answer for that question.`,
   `Even though lifelies provides you some help to find the answer for question final call for the answer is still yours.`,
+  `To use any lifeline click on the lifeline button or speak the name of the lifeline using microphone, while speaking please suffix 'lifeline' to the lifeline which you want to use. Eg. 'Audience Poll lifeline' or 'Double Dipp lifeline'.`,
   `Lifeline (Audience Poll) - 'Audience poll lifeline' will give you the result of audience for each option which will be displayed the bar chart.`,
   `Lifeline (Revive Lifeline) - You can use 'Revive lifeline' to reuse any of the already used lifeline.`,
   `Lifeline (Double Dipp) - If you use 'Double Dipp lifeline' for the question it will vanish 2 wrong options.`,
   `Lifeline (Expert Advice) - 'Revive lifeline' will give you the answer which is provided by the subject expert.`,
   `Even after taking help from your lifeline and you're not satisfied with the help or if you've already used all lifelines then you can quit the game at that moment.`,
+  `You can quit the game by clicking the button 'Quit Game' or by speaking 'Finish game' or 'Quit game' using microphone.`,
   `The moment you quit the game you'll be getting the prize which you've won till that moment.`,
   `If you have lost (not quit) the game before 6th question then you'll earn prize 0.`,
   `If you have lost (not quit) the game after 5th question & before 10th question then you'll earn prize 10,000.`,
@@ -20,6 +24,7 @@ export const GAME_RULES = [
   `If you're currently on Q.no 6th or 11th we encourage you to play that question because even if you lost then also you'll be getting the same prize which you've won till that question.`,
   `You can click on the microphone icon to record you answer using voice, you can change your answer by repeating the process.`,
   `Sound mode: You can click on the speaker icon to enable the sound mode.`,
+  `Note:=> Sometimes software may not be able to detect the correct speech (what you've spoken in the microphone) at that time I request you to please use buttons functionality.`,
   `Most important rule: Have Fun 😁 and enjoy the game 🙂.`,
 ];
 
@@ -179,6 +184,14 @@ export const speak = (msg: string) => {
       speechSynthesis.speak(speech);
     });
   }
+};
+
+export const saveToSessionStorage = (key: string, value: any) => {
+  sessionStorage.setItem(key, JSON.stringify(value));
+};
+
+export const getFromSessionStorage = (key: any) => {
+  return !key ? null : JSON.parse(sessionStorage.getItem("" + key) as string);
 };
 
 export const saveToLocalStorage = (key: string, value: any) => {
