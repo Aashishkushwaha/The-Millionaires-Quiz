@@ -18,15 +18,15 @@ const Home: React.FC<HomeProps> = ({
     <div>
       <div className="contestant__container">
         <input
+          required
+          id="name"
+          type="text"
           maxLength={30}
           autoComplete="off"
-          required
-          onChange={(e) => setContestantName(e.target.value)}
-          type="text"
-          id="name"
-          className="contestant__input"
           value={contestantName}
+          className="contestant__input"
           placeholder="Contestant Name"
+          onChange={(e) => setContestantName(e.target.value)}
         />
         <label htmlFor="name">Contestant Name</label>
       </div>
