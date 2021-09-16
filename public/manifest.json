@@ -1,6 +1,7 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "TMQ",
+  "name": "The Millionaire's Quiz",
+  "description": "This is a simple quiz game where you'll earn pseudo money if you answer correctly.",
   "icons": [
     {
       "src": "favicon.ico",
