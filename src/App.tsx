@@ -17,8 +17,12 @@ import {
   saveToLocalStorage,
   toggleSpeak,
   recogniser,
-  getMachedAnswerIndex,
 } from "./utils/utils";
+import {
+  checkForLifeline,
+  checkForQuitGame,
+  getMachedAnswerIndex,
+} from "./utils/fussyMatch";
 import {
   QuestionState,
   QuestionType,
@@ -47,11 +51,12 @@ const QUESTION_PRIZES: string[] = ENV_VARS.QUESTION_PRIZES?.split(";")!;
 const App = () => {
   const history = useHistory();
   const [speaking, setSpeaking] = useState<boolean>(false);
+  const [lifelineError, setLifelineError] = useState<string>("");
   const [microphoneEnabled, setMicrophoneEnabled] = useState<boolean>(false);
   const [soundEnabled, setSoundEnabled] = useState<boolean>(
     getFromLocalStorage(`${ENV_VARS.APP_NAME}__sound__enabled`) ?? false
   );
-  const [recognitionText, setRecognitionText] = useState<string>("");
+  const [recognizedText, setRecognizedText] = useState<string>("");
   const [lifelines, setLifeLines] = useState<LifelineType>(
     INITIAL_STATE.LIFELINES
   );
@@ -84,10 +89,18 @@ const App = () => {
   const { fetchData, data, loading, error } = useAxios();
 
   const toggleMicrophone = () => {
-    let a = microphoneEnabled;
-    !a && recogniser.start();
-    a && recogniser.stop();
-    setMicrophoneEnabled((m) => !m);
+    try {
+      let a = microphoneEnabled;
+      if (a) {
+        setSpeaking(false);
+        recogniser.stop();
+      } else {
+        recogniser?.start();
+      }
+      setMicrophoneEnabled((m) => !m);
+    } catch (e) {
+      console.error("microphone error");
+    }
   };
 
   const toggleSound = () => {
@@ -117,10 +130,15 @@ const App = () => {
     setTimeout(
       () => {
         setTimerId(null);
-        setRecognitionText("");
+        setRecognizedText("");
+        setSelectedLifeline("");
         setMicrophoneEnabled(false);
         setGameOver(true);
-        setLifeLines(INITIAL_STATE.LIFELINES);
+        cancelSpeak();
+        setLifeLines((lifelines) => ({
+          ...lifelines,
+          ...INITIAL_STATE.LIFELINES,
+        }));
         history.push("/summary");
       },
       correct_answer?.length > 20
@@ -134,20 +152,24 @@ const App = () => {
   };
 
   const chooseLifeline = (e: React.MouseEvent<HTMLButtonElement>) => {
-    const { value } = e.currentTarget;
-    setSelectedLifeline(value);
-    speak(`Are you sure you want to use ${value} lifeline?`);
+    setSelectedLifeline(e.currentTarget.value);
   };
+
+  useEffect(() => {
+    if (selectedLifeline)
+      speak(`Are you sure you want to use ${selectedLifeline} lifeline?`);
+    if (wantToQuitGame) speak("Are you sure you want to quit?");
+  }, [selectedLifeline, wantToQuitGame]);
 
   const ReviveLifelineConfirmHandler = () => {
     setSelectedLifeline("");
 
     setTimeout(() => {
-      setLifeLines({
+      setLifeLines((lifelines) => ({
         ...lifelines,
         [LIFELINES_ENUM.REVIVE_LIFELINE]: true,
         [selectedLifelineForRevival]: false,
-      });
+      }));
 
       setSelectedLifelineForRevival("");
     }, 400);
@@ -180,10 +202,10 @@ const App = () => {
       return;
     }
 
-    setLifeLines({
+    setLifeLines((lifelines) => ({
       ...lifelines,
       [selectedLifeline]: true,
-    });
+    }));
 
     if (selectedLifeline === LIFELINES_ENUM.AUDIENCE_POLL) {
       clearInterval(timerId);
@@ -293,7 +315,6 @@ const App = () => {
   };
 
   const quitGame = () => {
-    speak("Are you sure you want to quit?");
     setWantToQuitGame(true);
   };
 
@@ -317,10 +338,11 @@ const App = () => {
     cancelSpeak();
     let answer = "";
 
-    if (recognitionText) {
-      setRecognitionText("");
+    if (recognizedText) {
+      setRecognizedText("");
       let matchedIndex = getMachedAnswerIndex(
-        recognitionText.toLocaleLowerCase()
+        recognizedText.toLocaleLowerCase(),
+        questions[questionNumber].options
       );
 
       if (matchedIndex !== -1)
@@ -377,22 +399,53 @@ const App = () => {
 
       const recogniserResultsHandler = (e: any) => {
         setSpeaking(false);
-        setRecognitionText(e.results[0][0].transcript);
+        setMicrophoneEnabled(false);
+        const { transcript } = e.results[0][0];
+
+        let quitGame = checkForQuitGame(transcript.toLowerCase());
+
+        if (!quitGame) {
+          return setWantToQuitGame(true);
+        }
+
+        let { enumKey, lifelineKey } = checkForLifeline(
+          transcript.toLowerCase()
+        );
+
+        if (enumKey === "none") {
+          return setRecognizedText(transcript);
+        } else {
+          if (
+            (lifelineKey === LIFELINES_ENUM.REVIVE_LIFELINE &&
+              LIFELINES_ENUM.REVIVE_LIFELINE) ===
+            getFirstUsedLifeline(lifelines)
+          ) {
+            return setLifelineError(
+              "You can't use this lifeline now, You can choose any other available lifeline"
+            );
+          }
+
+          if (!lifelines[lifelineKey as keyof LifelineType]) {
+            setSelectedLifeline(
+              LIFELINES_ENUM[enumKey as keyof typeof LIFELINES_ENUM]
+            );
+          } else {
+            return (
+              lifelineKey &&
+              setLifelineError(`You have already used ${lifelineKey}.`)
+            );
+          }
+        }
       };
 
       const recogniserEndHandler = () => {
         setSpeaking(false);
-        setMicrophoneEnabled((m: boolean) => !m);
+        setMicrophoneEnabled(false);
       };
 
       recogniser.addEventListener("end", recogniserEndHandler);
       recogniser.addEventListener("start", startRecogniserHandler);
       recogniser.addEventListener("result", recogniserResultsHandler);
-
-      // recogniser.addEventListener("error", () => {
-      //   setMicrophoneEnabled((m: boolean) => !m);
-      //   alert("not able to recognise");
-      // });
 
       return () => {
         recogniser.removeEventListener("end", recogniserEndHandler);
@@ -400,11 +453,11 @@ const App = () => {
         recogniser.removeEventListener("result", recogniserResultsHandler);
       };
     }
-  }, []);
+  }, [lifelines]);
 
   useEffect(() => {
     if (questionNumber > -1) {
-      setRecognitionText("");
+      setRecognizedText("");
       setMicrophoneEnabled(false);
       setSeconds(
         questionNumber > GAME_STEPS.SECOND
@@ -488,57 +541,60 @@ const App = () => {
         alt={APP_NAME}
       />
       {gameOver && <h1 className="brand">{APP_NAME}</h1>}
-      {/* show loader while game is laoding or next question is loading */}
       {(loading || loadingNextQuestion || speaking) && <Loader />}
 
       <Modal
         type={
-          wantToQuitGame || !!recognitionText
+          wantToQuitGame || !!recognizedText
             ? "confirm"
-            : showRules
+            : showRules || !!lifelineError
             ? "info"
             : "default"
         }
         confirmHandler={
           wantToQuitGame
             ? quitGameConfirmHandler
-            : !!recognitionText
+            : !!recognizedText
             ? checkAnswer
             : () => {}
         }
         cancelHandler={
           wantToQuitGame
             ? () => setWantToQuitGame(false)
-            : !!recognitionText
-            ? () => setRecognitionText("")
+            : !!recognizedText
+            ? () => setRecognizedText("")
             : () => {}
         }
         show={
           showRules ||
           showContestentError ||
           wantToQuitGame ||
-          !!recognitionText
+          !!recognizedText ||
+          !!lifelineError
         }
         closeHandler={
-          showRules
+          lifelineError
+            ? () => setLifelineError("")
+            : showRules
             ? () => setShowRules(false)
             : wantToQuitGame
             ? () => setWantToQuitGame(false)
-            : !!recognitionText
-            ? () => setRecognitionText("")
+            : !!recognizedText
+            ? () => setRecognizedText("")
             : () => setShowContestentError(false)
         }
       >
         {showRules && <GameRules />}
+        {!!lifelineError && <h3 className="modal__header">{lifelineError}</h3>}
         {showContestentError && <h1>Please provide contestant name!</h1>}
         {wantToQuitGame && <h1>Are you sure you want to quit?</h1>}
-        {!!recognitionText && (
+        {!!recognizedText && (
           <div className="recogniser__modal-container">
             <h3 className="modal__header">
               Check current answer below, if not correct tell us new answer
               using microphone.
             </h3>
-            <h1>current answer - {recognitionText}</h1>
+            <h1>current answer - {recognizedText}</h1>
             <div style={{ display: "flex", justifyContent: "center" }}>
               <MicrophoneIcon
                 toggle={toggleMicrophone}
@@ -562,7 +618,10 @@ const App = () => {
           !!selectedLifeline || Boolean(audiencePollAnswer) || !!expertAnswer
         }
         confirmHandler={lifelineConfirmHandler}
-        cancelHandler={() => setSelectedLifeline("")}
+        cancelHandler={() => {
+          setSelectedLifeline("");
+          setSelectedLifelineForRevival("");
+        }}
         closeHandler={
           selectedLifelineForRevival
             ? ReviveLifelineConfirmHandler

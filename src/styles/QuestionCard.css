@@ -2,7 +2,6 @@
   text-align: center;
   max-width: 72rem;
   width: 85%;
-  /* width: 90%; */
   margin: 3rem auto 1.4rem;
   position: relative;
 }
@@ -158,7 +157,6 @@
   font-weight: 900;
   font-size: 1.6rem;
   position: absolute;
-  /* color: var(--white); */
   display: inline-block;
   transform: translateX(-50%);
   padding: 0.5rem 1.4rem;
@@ -198,8 +196,6 @@
 .lifeline span {
   position: absolute;
   display: inline-block;
-  /* top: 46%; */
-  /* left: 50%; */
   top: 135%;
   left: -45%;
   transform: translate(-50%) rotate(-40deg);
@@ -235,7 +231,6 @@
 
 @media screen and (max-width: 468px) {
   .questions__container {
-    /* width: 90%; */
     width: 100%;
   }
 
