@@ -11,5 +11,5 @@
 
 .rule::before {
   counter-increment: rule;
-  content: "#" counter(rule) ".";
+  content: "#" counter(rule) ". ";
 }
