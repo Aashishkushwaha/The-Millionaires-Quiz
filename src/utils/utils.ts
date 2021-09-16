@@ -2,6 +2,27 @@ import { LifelineType } from "../types";
 export let speech: any = null;
 export let recogniser: any = null;
 
+export const GAME_RULES = [
+  `The Millionaire's Quiz will have total 16 questions, where each question will be having particular prize associated with it.`,
+  `Each question will be having 4 options, one of them will be correct & rest will be incorrect.`,
+  `If you answer the question correctly then your maximum prize till that question will be the prize associated with that question.`,
+  `You will be getting 4 lifelines to help yourself whenever you're not sure about the answer for that question.`,
+  `Even though lifelies provides you some help to find the answer for question final call for the answer is still yours.`,
+  `Lifeline (Audience Poll) - 'Audience poll lifeline' will give you the result of audience for each option which will be displayed the bar chart.`,
+  `Lifeline (Revive Lifeline) - You can use 'Revive lifeline' to reuse any of the already used lifeline.`,
+  `Lifeline (Double Dipp) - If you use 'Double Dipp lifeline' for the question it will vanish 2 wrong options.`,
+  `Lifeline (Expert Advice) - 'Revive lifeline' will give you the answer which is provided by the subject expert.`,
+  `Even after taking help from your lifeline and you're not satisfied with the help or if you've already used all lifelines then you can quit the game at that moment.`,
+  `The moment you quit the game you'll be getting the prize which you've won till that moment.`,
+  `If you have lost (not quit) the game before 6th question then you'll earn prize 0.`,
+  `If you have lost (not quit) the game after 5th question & before 10th question then you'll earn prize 10,000.`,
+  `If you have lost (not quit) the game after 9th question then you'll earn prize 3,20,000.`,
+  `If you're currently on Q.no 6th or 11th we encourage you to play that question because even if you lost then also you'll be getting the same prize which you've won till that question.`,
+  `You can click on the microphone icon to record you answer using voice, you can change your answer by repeating the process.`,
+  `Sound mode: You can click on the speaker icon to enable the sound mode.`,
+  `Most important rule: Have Fun 😁 and enjoy the game 🙂.`,
+];
+
 export enum LIFELINES_ENUM {
   REVIVE_LIFELINE = "Revive Lifeline",
   AUDIENCE_POLL = "Audience Poll",

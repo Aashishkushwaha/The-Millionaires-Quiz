@@ -1,0 +1,15 @@
+.rules__container {
+  text-align: left;
+}
+
+.rule {
+  margin: 0.7rem 0;
+  color: var(--black);
+  padding: 0.4rem 0 0.4rem 1rem;
+  border-left: 5px solid var(--dark-golden-rod);
+}
+
+.rule::before {
+  counter-increment: rule;
+  content: "#" counter(rule) " :=> ";
+}

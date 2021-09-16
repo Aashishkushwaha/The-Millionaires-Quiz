@@ -40,6 +40,24 @@ body {
   -webkit-font-smoothing: antialiased;
   transition: scroll 0.3s ease-in-out;
   background: radial-gradient(var(--bg-primary), var(--bg-secondary));
+
+  counter-reset: rule;
+}
+
+::-webkit-scrollbar {
+  width: 0.8rem;
+  max-width: 10px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background: rgb(172, 172, 172);
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(151, 151, 151);
 }
 
 #root {
