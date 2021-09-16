@@ -3,7 +3,6 @@
   justify-content: center;
   position: fixed;
   width: 100px;
-  /* top: 50%; */
   left: 50%;
   bottom: 3rem;
   transform: translateX(-50%);

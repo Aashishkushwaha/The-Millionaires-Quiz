@@ -19,7 +19,6 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
           className="column"
           style={{
             height: `${(item.score / maxScore) * 100 * 2}px`,
-            // height: `${item.score * 3}px`,
             left: `${(100 / (data.length + 0.95)) * (index + 1)}%`,
           }}
         >
