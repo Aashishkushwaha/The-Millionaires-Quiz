@@ -67,6 +67,16 @@
       "sizes": "446x611"
     },
     {
+      "src": "/screenshots/Game Rules Modal.png",
+      "type": "image/png",
+      "sizes": "467x696"
+    },
+    {
+      "src": "/screenshots/Error Modal.png",
+      "type": "image/png",
+      "sizes": "472x697"
+    },
+    {
       "src": "/screenshots/Game-1.png",
       "type": "image/png",
       "sizes": "438x696"
@@ -77,9 +87,34 @@
       "sizes": "439x697"
     },
     {
+      "src": "/screenshots/Answer Confirmation Modal.png",
+      "type": "image/png",
+      "sizes": "462x697"
+    },
+    {
+      "src": "/screenshots/Lifeline Confirmation Modal.png",
+      "type": "image/png",
+      "sizes": "462x699"
+    },
+    {
+      "src": "/screenshots/Lifeline Result Modal.png",
+      "type": "image/png",
+      "sizes": "467x700"
+    },
+    {
+      "src": "/screenshots/Quit Game Modal.png",
+      "type": "image/png",
+      "sizes": "463x699"
+    },
+    {
       "src": "/screenshots/Summary.png",
       "type": "image/png",
       "sizes": "444x588"
+    },
+    {
+      "src": "/screenshots/Not Found Page.png",
+      "type": "image/png",
+      "sizes": "471x699"
     }
   ]
 }
