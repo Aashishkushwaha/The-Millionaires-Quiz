@@ -8,7 +8,11 @@ type SpeakerIconProps = {
 
 const SpeakerIcon: React.FC<SpeakerIconProps> = ({ enabled, toggle }) => {
   return (
-    <button className="icon__container" onClick={toggle}>
+    <button
+      onClick={toggle}
+      className="icon__container"
+      aria-label="toggle speaker"
+    >
       <span className="speaker__part-1"></span>
       <span className="speaker__part-2"></span>
       <span className="speaker__line speaker__line-1"></span>
