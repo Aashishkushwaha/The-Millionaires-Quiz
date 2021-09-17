@@ -9,9 +9,34 @@
       "type": "image/x-icon"
     },
     {
+      "src": "logo48.png",
+      "type": "image/png",
+      "sizes": "48x48"
+    },
+    {
+      "src": "logo72.png",
+      "type": "image/png",
+      "sizes": "72x72"
+    },
+    {
+      "src": "logo96.png",
+      "type": "image/png",
+      "sizes": "96x96"
+    },
+    {
+      "src": "logo128.png",
+      "type": "image/png",
+      "sizes": "128x128"
+    },
+    {
       "src": "logo192.png",
       "type": "image/png",
       "sizes": "192x192"
+    },
+    {
+      "src": "logo384.png",
+      "type": "image/png",
+      "sizes": "384x384"
     },
     {
       "src": "logo512.png",
@@ -19,8 +44,41 @@
       "sizes": "512x512"
     }
   ],
+  "scope": "/",
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "orientation": "portrait-primary",
+  "theme_color": "#111111",
+  "background_color": "#ffffff",
+  "shortcuts": [
+    {
+      "name": "Go to Home",
+      "short_name": "Home",
+      "description": "Home page of web application to restart game",
+      "url": "/",
+      "icons": [{ "src": "logo192.png", "sizes": "192x192" }]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/Home.png",
+      "type": "image/png",
+      "sizes": "446x611"
+    },
+    {
+      "src": "/screenshots/Game-1.png",
+      "type": "image/png",
+      "sizes": "438x696"
+    },
+    {
+      "src": "/screenshots/Game-2.png",
+      "type": "image/png",
+      "sizes": "439x697"
+    },
+    {
+      "src": "/screenshots/Summary.png",
+      "type": "image/png",
+      "sizes": "444x588"
+    }
+  ]
 }
