@@ -8,7 +8,11 @@ type MicrophoneIconProps = {
 
 const MicrophoneIcon: React.FC<MicrophoneIconProps> = ({ enabled, toggle }) => {
   return (
-    <button className="icon__container" onClick={toggle}>
+    <button
+      onClick={toggle}
+      className="icon__container"
+      aria-label="toggle microphone"
+    >
       <span className="microphone__part-1"></span>
       <span className="microphone__part-2"></span>
       <span className="microphone__line microphone__line-1"></span>
