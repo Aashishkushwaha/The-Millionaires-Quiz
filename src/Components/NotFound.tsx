@@ -1,13 +1,23 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "../styles/NotFound.css";
+import { speak } from "../utils/utils";
 
 type NotFoundProps = {
   goToHome: () => void;
+  soundEnabled: boolean;
 };
 
 const NotFound: React.FC<NotFoundProps> = ({
   goToHome,
+  soundEnabled,
 }): React.ReactElement => {
+  useEffect(() => {
+    soundEnabled &&
+      speak(
+        `Oops... it seems you're on the wront page. Please go to home page.`
+      );
+  }, [soundEnabled]);
+
   return (
     <>
       <div className="not-found__container">

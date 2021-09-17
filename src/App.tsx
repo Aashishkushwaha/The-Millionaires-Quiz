@@ -161,6 +161,10 @@ const App = () => {
   };
 
   useEffect(() => {
+    if (!soundEnabled) cancelSpeak();
+  }, [soundEnabled]);
+
+  useEffect(() => {
     if (contestantName)
       saveToSessionStorage(
         `${ENV_VARS.APP_NAME}__contestantName`,
@@ -729,7 +733,7 @@ const App = () => {
           </>
         </Route>
         <Route>
-          <NotFound goToHome={goToHome} />
+          <NotFound soundEnabled={soundEnabled} goToHome={goToHome} />
         </Route>
       </Switch>
       {(!gameOver ||
