@@ -38,6 +38,7 @@ import {
   Modal,
   Loader,
   BarChart,
+  NotFound,
   GameRules,
   GameSummary,
   QuestionCard,
@@ -726,6 +727,9 @@ const App = () => {
               />
             )}
           </>
+        </Route>
+        <Route>
+          <NotFound goToHome={goToHome} />
         </Route>
       </Switch>
       {(!gameOver ||
