@@ -550,13 +550,24 @@ const App = () => {
 
   return (
     <div className="App">
-      <img
-        width={260}
-        height={146}
-        draggable={false}
-        src={ENV_VARS.BRAND_LOGO_WEBP}
-        alt={APP_NAME}
-      />
+      <picture>
+        <source
+          media="(max-width: 600px)"
+          srcSet={ENV_VARS.BRAND_LOGO_WEBP_MOBILE}
+        />
+        <source media="(max-width: 1023px)" srcSet={ENV_VARS.BRAND_LOGO_WEBP} />
+        <source
+          media="(min-width: 1024px)"
+          srcSet={ENV_VARS.BRAND_LOGO_WEBP_MOBILE}
+        />
+        <img
+          draggable={false}
+          width={260}
+          height={146}
+          src={ENV_VARS.BRAND_LOGO_WEBP_MOBILE}
+          alt={APP_NAME}
+        />
+      </picture>
       {gameOver && <h1 className="brand">{APP_NAME}</h1>}
       {(loading || loadingNextQuestion || speaking) && <Loader />}
 
