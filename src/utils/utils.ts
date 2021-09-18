@@ -73,7 +73,7 @@ export const ENV_VARS = {
   QUESTION_PRIZES: process.env.REACT_APP_QUESTION_PRIZES,
   TOTAL_QUESTIONS: process.env.REACT_APP_TOTAL_QUESTIONS,
   APP_NAME: process.env.REACT_APP_APP_NAME,
-  BRAND_LOGO_PNG: process.env.REACT_APP_BRAND_LOGO_PNG,
+  BRAND_LOGO_WEBP_MOBILE: process.env.REACT_APP_BRAND_LOGO_WEBP_MOBILE,
   BRAND_LOGO_WEBP: process.env.REACT_APP_BRAND_LOGO_WEBP,
 };
 
@@ -181,7 +181,13 @@ export const speak = (msg: string) => {
   if ("speechSynthesis" in window) {
     cancelSpeak().then(() => {
       speech.text = msg;
-      speechSynthesis.speak(speech);
+      let btn = document.createElement("button");
+      btn.setAttribute("aria-label", "play sound");
+      document.body.appendChild(btn);
+      btn.addEventListener("click", () => {
+        speechSynthesis.speak(speech);
+      });
+      btn.click();
     });
   }
 };
