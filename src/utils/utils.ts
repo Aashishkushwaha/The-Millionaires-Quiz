@@ -188,6 +188,7 @@ export const speak = (msg: string) => {
         speechSynthesis.speak(speech);
       });
       btn.click();
+      document.body.removeChild(btn);
     });
   }
 };
