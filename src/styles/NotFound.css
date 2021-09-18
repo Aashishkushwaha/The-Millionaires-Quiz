@@ -47,6 +47,10 @@
     font-size: 2.8rem;
   }
 
+  .not-found__container > span.not-found__number:not(:first-of-type) {
+    margin-left: -1rem;
+  }
+
   .not-found__container > span.not-found__number:nth-of-type(3) {
     margin-left: -2rem;
   }
