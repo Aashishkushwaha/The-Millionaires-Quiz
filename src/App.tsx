@@ -491,6 +491,7 @@ const App = () => {
       clearInterval(timerId);
       setGameOver(true);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [questionNumber]);
 
   useEffect(() => {
@@ -506,6 +507,7 @@ const App = () => {
       setUserAnswers((answers) => [...answers, answer]);
       setTimeout(() => gameOverMethod(), 1000);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [seconds]);
 
   useEffect(() => {

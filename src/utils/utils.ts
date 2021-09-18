@@ -181,7 +181,13 @@ export const speak = (msg: string) => {
   if ("speechSynthesis" in window) {
     cancelSpeak().then(() => {
       speech.text = msg;
-      speechSynthesis.speak(speech);
+      let btn = document.createElement("button");
+      btn.setAttribute("aria-label", "play sound");
+      document.body.appendChild(btn);
+      btn.addEventListener("click", () => {
+        speechSynthesis.speak(speech);
+      });
+      btn.click();
     });
   }
 };
