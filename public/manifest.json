@@ -51,6 +51,7 @@
   "orientation": "portrait-primary",
   "theme_color": "#111111",
   "background_color": "#ffffff",
+  "categories": ["games", "education"],
   "shortcuts": [
     {
       "name": "Go to Home",
