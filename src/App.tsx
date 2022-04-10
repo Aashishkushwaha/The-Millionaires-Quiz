@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Route, Switch, useHistory } from "react-router-dom";
+import { Route, Switch, useHistory, Redirect } from "react-router-dom";
 import {
   ENV_VARS,
   GAME_STEPS,
@@ -45,6 +45,11 @@ import {
   SpeakerIcon,
   MicrophoneIcon,
 } from "./Components";
+import LoginOrRegister from "./Components/auth/LoginOrRegister";
+import { ToastContainer } from "react-toastify";
+import GameStats from "./Components/GameStats";
+import "react-toastify/dist/ReactToastify.css";
+import useLogout from "./hooks/useLogout";
 const DOMPurify = require("dompurify")(window);
 
 const TOTAL_QUESTIONS: number = +ENV_VARS.TOTAL_QUESTIONS!;
@@ -72,13 +77,14 @@ const App = () => {
     "",
   ]);
   const [contestantName, setContestantName] = useState<string>(
-    getFromSessionStorage(`${ENV_VARS.APP_NAME}__contestantName`) || ""
+    getFromSessionStorage(`${ENV_VARS.APP_NAME}__contestantName`)
   );
   const [selectedLifelineForRevival, setSelectedLifelineForRevival] =
     useState<string>("");
   const [selectedLifeline, setSelectedLifeline] = useState<string>("");
   const [showRules, setShowRules] = useState<boolean>(false);
   const [wantToQuitGame, setWantToQuitGame] = useState<boolean>(false);
+  const [wantToLogout, setWantToLogout] = useState<boolean>(false);
   const [showContestentError, setShowContestentError] =
     useState<boolean>(false);
   const [seconds, setSeconds] = useState<number>(QUESTION_TIME.EASY);
@@ -90,6 +96,7 @@ const App = () => {
     useState<boolean>(false);
   const [timerId, setTimerId] = useState<any>(null);
   const [userAnswers, setUserAnswers] = useState<AnswerType[]>([]);
+  const { logout } = useLogout();
 
   const { fetchData, data, loading, error } = useAxios();
 
@@ -328,7 +335,7 @@ const App = () => {
 
   const goToHome = () => {
     cancelSpeak();
-    history.push("/");
+    history.push("/init_game");
   };
 
   const quitGame = () => {
@@ -349,6 +356,11 @@ const App = () => {
     setUserAnswers((answers) => [...answers, answer]);
     setWantToQuitGame(false);
     setTimeout(() => gameOverMethod(), 200);
+  };
+
+  const logoutConfirmHandler = () => {
+    setWantToLogout(false);
+    logout();
   };
 
   const checkAnswer = (e?: React.MouseEvent<HTMLButtonElement>) => {
@@ -398,6 +410,10 @@ const App = () => {
       );
       gameOverMethod();
     }
+  };
+
+  const logoutClickHandler = () => {
+    setWantToLogout((value) => !value);
   };
 
   useEffect(() => {
@@ -552,6 +568,13 @@ const App = () => {
 
   return (
     <div className="App">
+      <ToastContainer
+        position="bottom-left"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={true}
+        closeOnClick
+      />
       <picture>
         <source
           media="(max-width: 600px)"
@@ -575,7 +598,7 @@ const App = () => {
 
       <Modal
         type={
-          wantToQuitGame || !!recognizedText
+          wantToQuitGame || wantToLogout || !!recognizedText
             ? "confirm"
             : showRules || !!lifelineError
             ? "info"
@@ -584,6 +607,8 @@ const App = () => {
         confirmHandler={
           wantToQuitGame
             ? quitGameConfirmHandler
+            : wantToLogout
+            ? logoutConfirmHandler
             : !!recognizedText
             ? checkAnswer
             : () => {}
@@ -591,6 +616,8 @@ const App = () => {
         cancelHandler={
           wantToQuitGame
             ? () => setWantToQuitGame(false)
+            : wantToLogout
+            ? () => setWantToLogout(false)
             : !!recognizedText
             ? () => setRecognizedText("")
             : () => {}
@@ -599,6 +626,7 @@ const App = () => {
           showRules ||
           showContestentError ||
           wantToQuitGame ||
+          wantToLogout ||
           !!recognizedText ||
           !!lifelineError
         }
@@ -609,6 +637,8 @@ const App = () => {
             ? () => setShowRules(false)
             : wantToQuitGame
             ? () => setWantToQuitGame(false)
+            : wantToLogout
+            ? () => setWantToLogout(false)
             : !!recognizedText
             ? () => setRecognizedText("")
             : () => setShowContestentError(false)
@@ -618,6 +648,7 @@ const App = () => {
         {!!lifelineError && <h3 className="modal__header">{lifelineError}</h3>}
         {showContestentError && <h1>Please provide contestant name!</h1>}
         {wantToQuitGame && <h1>Are you sure you want to quit?</h1>}
+        {wantToLogout && <h1>Are you sure you want to logout?</h1>}
         {!!recognizedText && (
           <div className="recogniser__modal-container">
             <h3 className="modal__header">
@@ -663,7 +694,7 @@ const App = () => {
         }
       >
         {selectedLifelineForRevival ? (
-          <div className="lineline__revival__container">
+          <div className="lifeline__revival__container">
             <h3 style={{ marginBottom: "1rem" }}>
               Please select lifeline to revive
             </h3>
@@ -711,12 +742,25 @@ const App = () => {
       </Modal>
       <Switch>
         <Route path="/" exact>
+          <Redirect to="/login" />
+        </Route>
+        <Route path="/login" exact>
+          <LoginOrRegister setContestantName={setContestantName} />
+        </Route>
+        <Route path="/register" exact>
+          <LoginOrRegister setContestantName={setContestantName} />
+        </Route>
+        <Route path="/init_game" exact>
           <Home
             showRules={showRulesMethod}
             startGame={startGame}
             contestantName={contestantName}
             setContestantName={setContestantName}
+            logoutClickHandler={logoutClickHandler}
           />
+        </Route>
+        <Route path="/game-stats" exact>
+          <GameStats logoutClickHandler={logoutClickHandler} />
         </Route>
         <Route path="/play">
           <QuestionCard
@@ -730,20 +774,20 @@ const App = () => {
             contestantName={contestantName}
             question={questions[questionNumber]}
             doubleDippOptions={doubleDippOptions}
+            logoutClickHandler={logoutClickHandler}
             userAnswer={userAnswers ? userAnswers[questionNumber] : null}
           />
         </Route>
         <Route path="/summary">
-          <>
-            {(gameOver || questionNumber === +TOTAL_QUESTIONS!) && (
-              <GameSummary
-                goToHome={goToHome}
-                prizeWon={prizeWon}
-                questionNumber={questionNumber}
-                contestantName={contestantName}
-              />
-            )}
-          </>
+          {(gameOver || questionNumber === +TOTAL_QUESTIONS!) && (
+            <GameSummary
+              goToHome={goToHome}
+              prizeWon={prizeWon}
+              questionNumber={questionNumber}
+              contestantName={contestantName}
+              logoutClickHandler={logoutClickHandler}
+            />
+          )}
         </Route>
         <Route>
           <NotFound soundEnabled={soundEnabled} goToHome={goToHome} />

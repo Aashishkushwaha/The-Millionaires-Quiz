@@ -1,0 +1,98 @@
+.loginOrRegister__container {
+  box-shadow: 0 3px solid var(--dark-golden-rod);
+  width: 90%;
+  margin: 0 auto;
+  margin-top: 2rem;
+  max-width: 420px;
+  /* box-shadow: 0 0px 10px 1px rgba(40, 4, 47, 0.65); */
+  box-shadow: 0 0px 10px 1px rgba(13, 11, 14, 0.2);
+  padding: 1.6rem;
+  padding-bottom: 2rem;
+}
+
+.form-field__container {
+  width: 90%;
+  margin: 0 auto;
+  max-width: 420px;
+  position: relative;
+}
+
+.form-field__container label {
+  left: 0;
+  top: 2rem;
+  opacity: 1;
+  z-index: -1;
+  font-size: 1.4rem;
+  position: absolute;
+  color: var(--light-yellow);
+  transform: translateY(2rem);
+  transition: transform 0.15s ease-in-out;
+}
+
+.form-field__container input:not(:placeholder-shown) + label {
+  opacity: 1;
+  transform: translateY(-1.5rem);
+}
+
+.form-field__container input {
+  width: 100%;
+  padding: .8rem 1.2rem;
+  margin-top: 2.4rem;
+  font-weight: 700;
+  font-size: 1.4rem;
+  position: relative;
+  color: var(--black);
+  background: var(--white);
+  border: 3px solid transparent;
+  box-shadow: 0 2px 5px var(--black);
+}
+
+.form-field__container input:focus {
+  outline: none;
+  border: 3px solid var(--dark-yellow);
+}
+
+.loginOrRegister__btn {
+  margin-top: 2rem;
+  border: none;
+  color: var(--black);
+  padding: 1.2rem;
+  font-size: 1.8rem;
+  width: 400px;
+  max-width: 100%;
+  font-weight: 700;
+  box-shadow: 0 2px 5px var(--black);
+  border-radius: 50px;
+  border-radius: 4px;
+  box-shadow: 0 2px 5px var(--black);
+  background: linear-gradient(180deg, var(--light-yellow), var(--dark-yellow));
+}
+
+.form-header,
+.loginOrRegister__container .link__container a {
+  text-transform: capitalize;
+  background: linear-gradient(180deg, var(--light-yellow), var(--dark-yellow));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-size: 3.4rem;
+  font-weight: 700;
+}
+
+.loginOrRegister__container .link__container {
+  width: 90%;
+  margin: 0 auto;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  max-width: 420px;
+  margin-top: 1.4rem;
+  color: var(--white);
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.loginOrRegister__container .link__container a {
+  font-size: 1.6rem;
+  text-decoration: 2px  dashed var(--dark-golden-rod);
+}

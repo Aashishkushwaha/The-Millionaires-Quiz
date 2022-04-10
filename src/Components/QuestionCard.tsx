@@ -1,7 +1,14 @@
 import React, { useEffect } from "react";
+import { Redirect } from "react-router-dom";
 import "../styles/QuestionCard.css";
 import { AnswerType, LifelineType, QuestionState } from "../types";
-import { getFirstUsedLifeline, LIFELINES_ENUM, speak } from "../utils/utils";
+import {
+  getFromLocalStorage,
+  ENV_VARS,
+  getFirstUsedLifeline,
+  LIFELINES_ENUM,
+  speak,
+} from "../utils/utils";
 const DOMPurify = require("dompurify")(window);
 
 type QuestionCardProps = {
@@ -14,6 +21,7 @@ type QuestionCardProps = {
   lifelines: LifelineType;
   userAnswer: AnswerType | null;
   doubleDippOptions: [string, string];
+  logoutClickHandler: () => void;
   checkAnswer: (e: React.MouseEvent<HTMLButtonElement>) => void;
   chooseLifeline: (e: React.MouseEvent<HTMLButtonElement>) => void;
 };
@@ -30,6 +38,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
   chooseLifeline,
   contestantName,
   doubleDippOptions,
+  logoutClickHandler,
 }) => {
   useEffect(() => {
     if (question) {
@@ -53,9 +62,18 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
     }
   }, [question]);
 
+  const token = getFromLocalStorage(`${ENV_VARS.APP_NAME}_token`);
+
+  if (!token) return <Redirect to="/login" />;
+
   if (question) {
     return (
       <>
+        {token && (
+          <button className="logout__button" onClick={logoutClickHandler}>
+            Logout
+          </button>
+        )}
         <div>
           <h1 className="contestant__name">{contestantName}</h1>
           <button className="quit__game" onClick={quitGame}>

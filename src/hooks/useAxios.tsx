@@ -10,13 +10,15 @@ export const useAxios = () => {
     setLoading(true);
     try {
       const result = await axios.request(params);
-      setData(result.data.results);
+      setData(result.data.results || result.data);
+      setError("");
     } catch (error: any) {
-      setError("Error: " + error.message);
+      setData(undefined);
+      setError(error?.response?.data?.message || error?.message);
     } finally {
       setLoading(false);
-      return { data, error, loading };
     }
+    return { data, error, loading };
   };
 
   return { data, error, loading, fetchData };

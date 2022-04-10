@@ -1,3 +1,4 @@
+import { toast } from "react-toastify";
 import { LifelineType } from "../types";
 export let speech: any = null;
 export let recogniser: any = null;
@@ -207,4 +208,23 @@ export const saveToLocalStorage = (key: string, value: any) => {
 
 export const getFromLocalStorage = (key: any) => {
   return !key ? null : JSON.parse(localStorage.getItem("" + key) as string);
+};
+
+type config = {
+  variant: string;
+};
+
+export const showToast = (msg: string, type: config = { variant: "info" }) => {
+  switch (type.variant) {
+    case "success":
+      toast.success(msg);
+      break;
+    case "error":
+      toast.error(msg);
+      break;
+    case "info":
+    default:
+      toast.info(msg);
+      break;
+  }
 };
