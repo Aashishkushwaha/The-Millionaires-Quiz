@@ -1,0 +1,31 @@
+.game-stats__container {
+  width: 100%;
+  max-width: 60rem;
+  border: 1px solid var(--dark-golden-rod);
+  margin: 1rem auto;
+  border-collapse: collapse;
+}
+
+.game-stats__container thead {
+  margin-bottom: 1rem;
+}
+
+.game-stats__container  th {
+  background: var(--golden-rod);
+  font-size: 1.4rem;
+  padding: 1rem;
+}
+
+.game-stats__container td {
+  background-color: var(--white);
+  padding: .4rem;
+  font-size: 1.2rem;
+  margin: 1rem;
+}
+
+.empty__stats {
+  padding: 3rem !important;
+  font-size: 2rem !important;
+  font-weight: 700 !important;
+  color: var(--bg-primary);
+}

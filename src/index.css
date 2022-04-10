@@ -107,9 +107,17 @@ button {
   background: var(--white);
 }
 
-.game__rules-btn {
+
+.game__rules-btn,
+.start__game {
   border-radius: 4px;
   max-width: 90%;
+  margin-top: 1.2rem;
+  padding: 1rem;
+}
+
+.start__game {
+  margin-top: 2rem;
 }
 
 .quit__game {
@@ -122,10 +130,24 @@ button {
   right: 1rem;
 }
 
+.logout__button {
+  background: var(--wrong-answer);
+  color: var(--white);
+  position: fixed;
+  padding: 0.6rem 1.4rem;
+  width: auto;
+  bottom: 2rem;
+  border-radius: 2rem;
+  left: 1rem;
+  border: none;
+  font-size: 1.2rem;
+  box-shadow: 0 2px 4px 1px rgba(0, 0, 0, .2);
+}
+
 .start__game {
   max-width: 90%;
   border-radius: 4px;
-  box-shadow: 0 2px 5px black;
+  box-shadow: 0 2px 5px var(--black);
   background: linear-gradient(180deg, var(--light-yellow), var(--dark-yellow));
 }
 
@@ -147,11 +169,11 @@ button:active {
   transform: translateY(2px);
 }
 
-.lineline__revival__container h3 {
+.lifeline__revival__container h3 {
   font-size: 2rem;
 }
 
-.lineline__revival__container div {
+.lifeline__revival__container div {
   display: inline-flex;
   flex-wrap: wrap;
   align-items: center;
@@ -159,17 +181,17 @@ button:active {
   margin: 1rem 1.6rem;
 }
 
-.lineline__revival__container > div > * {
+.lifeline__revival__container > div > * {
   font-size: 1.6rem;
   cursor: pointer;
 }
 
-.lineline__revival__container > div > input {
+.lifeline__revival__container > div > input {
   height: 2rem;
   width: 2rem;
 }
 
-.lineline__revival__container > div > label {
+.lifeline__revival__container > div > label {
   display: inline-block;
   margin-left: 1rem;
 }

@@ -39,3 +39,18 @@
   outline: none;
   border: 3px solid var(--dark-yellow);
 }
+
+.game__stats {
+  margin-top: 2rem;
+}
+
+.game__stats a{
+  text-transform: capitalize;
+  background: linear-gradient(180deg, var(--light-yellow), var(--dark-yellow));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-size: 1.4rem;
+  font-weight: 700;
+  border-bottom: 1px solid var(--dark-golden-rod);
+}
